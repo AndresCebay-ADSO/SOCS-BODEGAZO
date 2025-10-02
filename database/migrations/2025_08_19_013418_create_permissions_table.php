@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('description'); // Ej: 'Ver listado de productos'
             $table->string('module'); // Ej: 'productos'
             $table->string('action'); // Ej: 'view', 'create', 'edit', 'delete'
+            $table->json('allowed_views')->nullable(); // Vistas permitidas para este permiso
             $table->timestamps();
             
             $table->unique(['module', 'action']); // Cada combinación módulo-acción debe ser única

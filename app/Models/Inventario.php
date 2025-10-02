@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Usuario;
 
 class Inventario extends Model
 {
@@ -27,5 +28,10 @@ class Inventario extends Model
     public function producto()
     {
         return $this->belongsTo(Producto::class, 'idProInv');
+    }
+
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class, 'idUsu'); // Asumiendo que la columna es idUsu
     }
 }

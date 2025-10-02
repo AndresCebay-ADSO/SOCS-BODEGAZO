@@ -22,11 +22,7 @@
             </div>
         @endif
 
-        @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-                <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
-            </div>
-        @endif
+        
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Formulario de pago -->

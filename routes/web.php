@@ -33,7 +33,16 @@ use App\Http\Controllers\PayUController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    // Obtener productos destacados (activos y con stock)
+    $productosDestacados = \App\Models\Producto::where('estPro', 'Activo')
+        ->where('canPro', '>', 0)
+        ->take(4)
+        ->get();
+    
+    // Obtener categorías activas
+    $categorias = \App\Models\Categoria::where('estCat', 'Activo')->get();
+
+    return view('welcome', compact('productosDestacados', 'categorias'));
 })->name('welcome');
 
 Route::get('/productos', function() {
@@ -70,7 +79,11 @@ Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name(
 
 Route::middleware(['auth'])->prefix('cliente')->name('clientes.')->group(function() {
     Route::get('/dashboard', function() {
-        return view('clientes.dashboard');
+        $productosDestacados = \App\Models\Producto::where('activo', 1)
+            ->whereIn('estPro', ['Activo', 'disponible'])
+            ->where('canPro', '>', 0)
+            ->paginate(12); // Aumentamos a 12 productos por página
+        return view('clientes.dashboard', compact('productosDestacados'));
     })->name('dashboard');
 
     Route::get('/categorias', [ClienteProductoController::class, 'categorias'])->name('categorias');
@@ -111,6 +124,12 @@ Route::middleware(['auth'])->prefix('cliente')->name('clientes.')->group(functio
     // Búsqueda
     Route::get('/buscar', [BusquedaController::class, 'buscar'])->name('buscar');
     Route::get('/autocompletar', [BusquedaController::class, 'autocompletar'])->name('autocompletar');
+
+    // Notificaciones
+    Route::prefix('notifications')->name('notifications.')->middleware('role:3')->group(function () {
+        Route::get('/', [NotificacionesController::class, 'userIndex'])->name('index');
+        Route::get('/unread', [NotificacionesController::class, 'getUnreadNotifications'])->name('getUnread');
+    });
 
     // Productos
     Route::get('/productos', [ClienteProductoController::class, 'index'])->name('productos.index');
@@ -189,9 +208,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/', [NotificacionesController::class, 'index'])->name('index');
         Route::get('/crear', [NotificacionesController::class, 'create'])->name('create');
         Route::post('/', [NotificacionesController::class, 'store'])->name('store');
-        Route::get('/{notificacion}/editar', [NotificacionesController::class, 'edit'])->name('edit');
-        Route::put('/{notificacion}', [NotificacionesController::class, 'update'])->name('update');
-        Route::delete('/{notificacion}', [NotificacionesController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/editar', [NotificacionesController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [NotificacionesController::class, 'update'])->name('update');
+        Route::post('/marcar-leidas', [NotificacionesController::class, 'marcarLeidas'])->name('marcarLeidas');
+        Route::delete('/{id}', [NotificacionesController::class, 'destroy'])->name('destroy');
     });
 
     // Usuarios
@@ -298,7 +318,7 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->name('superadmi
     });
 
     // Notificaciones (coincide con admin/notifications/ en tus vistas)
-    Route::prefix('notificaciones')->name('notificaciones.')->middleware(['auth', 'admin'])->group(function () {
+    Route::prefix('notificaciones')->name('notificaciones.')->group(function () {
         // Listado
         Route::get('/', [NotificacionesController::class, 'index'])->name('index');
         

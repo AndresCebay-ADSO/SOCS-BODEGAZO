@@ -21,7 +21,7 @@ class RoleMiddleware
             'required_role' => $role
         ]);
 
-        if ((int)Auth::user()->idRolUsu != (int)$role) {
+        if ((int)Auth::user()->idRolUsu != 2) { // 2 = Usuario/Cliente
             abort(403, 'No tienes permisos para acceder a esta sección.');
         }
 

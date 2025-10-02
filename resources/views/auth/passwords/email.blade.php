@@ -12,9 +12,7 @@
         <div>
             <div class="card-header bg-primary text-white"></div>
             <div class="card-body p-4">
-                @if (session('status'))
-                    <div class="alert alert-success">{{ session('status') }}</div>
-                @endif
+                
                 <form method="POST" action="{{ route('password.email') }}">
                     @csrf
                     <div class="mb-6">

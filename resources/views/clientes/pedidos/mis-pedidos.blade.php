@@ -121,12 +121,13 @@
                                             <i class="fas fa-credit-card mr-1"></i>
                                             Pagar
                                         </a>
+                                    @else
+                                        <a href="{{ route('clientes.pedidos.factura', $pedido->idPed) }}" 
+                                           class="inline-flex items-center px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-xs">
+                                            <i class="fas fa-file-invoice mr-1"></i>
+                                            Comprobante
+                                        </a>
                                     @endif
-                                    <a href="{{ route('clientes.pedidos.factura', $pedido->idPed) }}" 
-                                       class="inline-flex items-center px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-xs">
-                                        <i class="fas fa-file-invoice mr-1"></i>
-                                        Comprobante
-                                    </a>
                                 </td>
                             </tr>
                         @endforeach

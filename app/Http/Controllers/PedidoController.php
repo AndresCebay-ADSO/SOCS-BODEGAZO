@@ -134,14 +134,23 @@ class PedidoController extends Controller
 
         DB::beginTransaction();
         try {
+            // 1. Crear el pedido sin el producto
             $pedido = Pedido::create([
                 'idUsuPed' => $validatedData['idUsuPed'],
-                'idProPed' => $validatedData['idProPed'],
                 'fecPed' => Carbon::parse($validatedData['fecPed']),
                 'prePed' => $validatedData['prePed'],
                 'estPed' => 'Por pagar'
             ]);
 
+            // 2. Crear el detalle del pedido
+            DB::table('detallesped')->insert([
+                'idPedDet' => $pedido->idPed,
+                'idProDet' => $validatedData['idProPed'],
+                'canDet' => 1, // Asumimos cantidad 1
+                'preDet' => $validatedData['prePed']
+            ]);
+
+            // 3. Descontar el stock
             Producto::where('idPro', $validatedData['idProPed'])
                 ->decrement('canPro');
 
@@ -149,7 +158,7 @@ class PedidoController extends Controller
 
             return redirect()
                 ->route('admin.pedidos.index')
-                ->with('success', 'Pedido #'.$pedido->idPed.' creado correctamente');
+                ->with('success', 'Pedido #'.$pedido->idPed.' creado y stock actualizado.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -172,25 +181,71 @@ class PedidoController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'idUsuPed' => 'required|exists:usuarios,idUsu',
+        $validatedData = $request->validate([
+            'idUsuPed' => 'required|exists:usuarios,id',
             'idProPed' => 'required|exists:productos,idPro',
             'fecPed'   => 'required|date',
             'prePed'   => 'required|numeric|min:0',
         ]);
 
-        $pedido = Pedido::findOrFail($id);
-        $pedido->update($request->all());
+        DB::beginTransaction();
+        try {
+            $pedido = Pedido::findOrFail($id);
+            
+            // Obtener el detalle actual para saber el producto original
+            $detalleOriginal = DB::table('detallesped')->where('idPedDet', $pedido->idPed)->first();
+            $idProOriginal = $detalleOriginal ? $detalleOriginal->idProDet : null;
 
-        return redirect()->route('admin.pedidos.index')->with('success', 'Pedido actualizado correctamente.');
+            // Actualizar el pedido
+            $pedido->update($request->only(['idUsuPed', 'fecPed', 'prePed', 'estPed']));
+
+            // Si el producto ha cambiado, ajustar el stock
+            if ($idProOriginal && $idProOriginal != $request->idProPed) {
+                // Incrementar stock del producto original
+                Producto::where('idPro', $idProOriginal)->increment('canPro');
+                
+                // Decrementar stock del nuevo producto
+                Producto::where('idPro', $request->idProPed)->decrement('canPro');
+            }
+
+            // Actualizar el producto en el detalle del pedido
+            DB::table('detallesped')
+                ->where('idPedDet', $pedido->idPed)
+                ->update(['idProDet' => $request->idProPed]);
+
+            DB::commit();
+
+            return redirect()->route('admin.pedidos.index')->with('success', 'Pedido actualizado correctamente.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Error al actualizar el pedido: ' . $e->getMessage()])->withInput();
+        }
     }
 
     public function destroy($id)
     {
-        $pedido = Pedido::findOrFail($id);
-        $pedido->delete();
+        DB::beginTransaction();
+        try {
+            $pedido = Pedido::findOrFail($id);
 
-        return redirect()->route('admin.pedidos.index')->with('success', 'Pedido eliminado correctamente.');
+            // Obtener el detalle para saber qué producto liberar
+            $detalle = DB::table('detallesped')->where('idPedDet', $pedido->idPed)->first();
+
+            // Si hay un producto asociado, incrementar su stock
+            if ($detalle) {
+                Producto::where('idPro', $detalle->idProDet)->increment('canPro');
+            }
+
+            // Eliminar el pedido
+            $pedido->delete();
+
+            DB::commit();
+
+            return redirect()->route('admin.pedidos.index')->with('success', 'Pedido eliminado y stock restaurado.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Error al eliminar el pedido: ' . $e->getMessage()]);
+        }
     }
 
     public function updateEstado(Request $request, $id)

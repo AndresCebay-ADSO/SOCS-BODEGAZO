@@ -48,7 +48,7 @@ class InventarioController extends Controller
 
             \DB::commit();
 
-            return redirect()->route('inventarios.index')
+            return redirect()->route('admin.inventarios.index')
                             ->with('success', 'Inventario registrado correctamente');
 
         } catch (\Exception $e) {
@@ -102,7 +102,7 @@ class InventarioController extends Controller
             ]);
         });
 
-        return redirect()->route('inventarios.index')
+        return redirect()->route('admin.inventarios.index')
                         ->with('success', 'Inventario actualizado correctamente');
     }
 
@@ -115,7 +115,7 @@ class InventarioController extends Controller
 
         $inventario->delete();
 
-        return redirect()->route('inventarios.index')
+        return redirect()->route('admin.inventarios.index')
                          ->with('success', 'Registro eliminado y stock ajustado');
     }
 }

@@ -24,7 +24,7 @@
 
     <!-- Form Card -->
     <div class="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200 max-w-3xl mx-auto">
-        <form action="{{ route('inventarios.update', $inventario->idInv) }}" method="POST" class="p-6">
+        <form action="{{ route('admin.inventarios.update', $inventario->idInv) }}" method="POST" class="p-6">
             @csrf
             @method('PUT')
             
@@ -124,7 +124,7 @@
 
             <!-- Botones de acción -->
             <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
-                <a href="{{ route('inventarios.index') }}" 
+                <a href="{{ route('admin.inventarios.index') }}" 
                    class="px-5 py-2.5 inline-flex justify-center items-center border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
                     <i class="fas fa-times mr-2"></i> Cancelar
                 </a>

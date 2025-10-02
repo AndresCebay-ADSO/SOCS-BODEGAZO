@@ -36,13 +36,7 @@
 
             <!-- Contenido -->
             <div class="p-8">
-                <!-- Mensaje de éxito -->
-                @if(session('success'))
-                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 flex items-center gap-2">
-                        <i class="fas fa-check-circle"></i>
-                        <span>{{ session('success') }}</span>
-                    </div>
-                @endif
+                
 
                 <!-- Información personal -->
                 <h2 class="text-lg font-semibold text-gray-700 mb-6 border-b pb-2">Información Personal</h2>

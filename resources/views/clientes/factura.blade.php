@@ -4,19 +4,7 @@
 
 @section('content')
 
-@if(session('success'))
-    <div class="max-w-4xl mx-auto mb-6">
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
-            <div class="flex items-center">
-                <i class="fas fa-check-circle mr-3 text-xl"></i>
-                <div>
-                    <h3 class="font-bold">¡Pago Exitoso!</h3>
-                    <p>{{ session('success') }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-@endif
+
 
 <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-lg p-8 text-sm">
     {{-- Cabecera con datos de la empresa y número de factura --}}

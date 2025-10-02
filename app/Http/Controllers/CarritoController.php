@@ -44,8 +44,25 @@ class CarritoController extends Controller
 
         $producto = Producto::findOrFail($request->producto_id);
         
+        // Verificar que el producto tenga precio de venta
+        if (!$producto->precio_venta || $producto->precio_venta <= 0) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El producto no tiene un precio de venta válido. Contacte al administrador.'
+                ]);
+            }
+            return back()->with('error', 'El producto no tiene un precio de venta válido. Contacte al administrador.');
+        }
+        
         // Verificar disponibilidad
         if ($producto->estPro !== 'Activo' || $producto->canPro < $request->cantidad) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Producto no disponible en la cantidad solicitada.'
+                ]);
+            }
             return back()->with('error', 'Producto no disponible en la cantidad solicitada.');
         }
 
@@ -60,11 +77,23 @@ class CarritoController extends Controller
 
         // Verificar que no exceda el stock disponible
         if ($carrito[$id] > $producto->canPro) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No hay suficiente stock disponible.'
+                ]);
+            }
             return back()->with('error', 'No hay suficiente stock disponible.');
         }
 
         Session::put('carrito', $carrito);
 
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Producto agregado al carrito correctamente.'
+            ]);
+        }
         return back()->with('success', 'Producto agregado al carrito correctamente.');
     }
 
@@ -82,6 +111,14 @@ class CarritoController extends Controller
             unset($carrito[$id]);
         } else {
             $producto = Producto::findOrFail($id);
+            
+            // Verificar que el producto tenga precio de venta
+            if (!$producto->precio_venta || $producto->precio_venta <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El producto no tiene un precio de venta válido. Contacte al administrador.'
+                ]);
+            }
             
             if ($producto->estPro !== 'Activo' || $producto->canPro < $request->cantidad) {
                 return response()->json([
@@ -182,6 +219,13 @@ class CarritoController extends Controller
             // Agregar productos al pedido
             foreach ($carrito as $productoId => $cantidad) {
                 $producto = Producto::findOrFail($productoId);
+                
+                // Validar que el producto tenga precio de venta
+                if (!$producto->precio_venta || $producto->precio_venta <= 0) {
+                    \DB::rollBack();
+                    return redirect()->route('clientes.carrito.index')
+                        ->with('error', 'El producto "' . $producto->nomPro . '" no tiene un precio de venta válido. Contacte al administrador.');
+                }
 
                 \App\Models\Detallesped::create([
                     'idPedDet' => $pedido->idPed,

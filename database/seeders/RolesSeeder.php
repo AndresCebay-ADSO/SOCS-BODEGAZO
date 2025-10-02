@@ -9,21 +9,21 @@ class RolesSeeder extends Seeder
 {
     public function run()
     {
-        Rol::firstOrCreate(['nivRol' => Rol::SUPERADMIN], [
+        Rol::updateOrCreate(['idRol' => 1], [
             'tipRol' => 'Superadmin',
             'nivRol' => Rol::SUPERADMIN,
             'desRol' => 'Rol con todos los privilegios',
             'estRol' => 'Activo'
         ]);
 
-        Rol::firstOrCreate(['nivRol' => Rol::ADMIN], [
+        Rol::updateOrCreate(['idRol' => 2], [
             'tipRol' => 'Administrador',
             'nivRol' => Rol::ADMIN,
             'desRol' => 'Rol para administradores estándar',
             'estRol' => 'Activo'
         ]);
 
-        Rol::firstOrCreate(['nivRol' => Rol::CLIENTE], [
+        Rol::updateOrCreate(['idRol' => 3], [
             'tipRol' => 'Cliente',
             'nivRol' => Rol::CLIENTE,
             'desRol' => 'Rol para usuarios clientes',

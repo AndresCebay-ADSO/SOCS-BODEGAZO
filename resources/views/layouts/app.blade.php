@@ -66,11 +66,15 @@
     
     @stack('styles')
 </head>
-<body class="bg-gray-100 font-sans antialiased">
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+    @php
+    $notificaciones = [];
+    @endphp
+
     {{-- Navbar solo para clientes --}}
     @auth
         @if(auth()->user()->idRolUsu == 2)
-            <nav class="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 py-4 px-6 shadow-lg sticky top-0 z-50">
+            <nav class="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 py-4 px-6 shadow-lg z-50">
                 <div class="container mx-auto">
                     <div class="flex flex-col lg:flex-row justify-between items-center gap-4">
                         <!-- Logo y menú móvil -->
@@ -138,7 +142,24 @@
                                     <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">{{ $cantidad }}</span>
                                 @endif
                             </a>
-                            <a href="{{ route('clientes.profile') }}" 
+
+                            {{-- Notificaciones --}}
+                            <div class="relative" id="notification-container">
+                                <a href="#" id="notificaciones-link" class="text-white hover:text-orange-300 transition duration-200 flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 relative">
+                                    <i class="fas fa-bell"></i>
+                                    <span id="notificaciones-count" class="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold" style="display: none;"></span>
+                                </a>
+                                <div id="notificaciones-dropdown" class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl overflow-hidden z-50 hidden">
+                                    <div class="py-2 px-4 text-gray-700 font-bold border-b">Notificaciones</div>
+                                    <div id="notificaciones-list" class="divide-y">
+                                        {{-- Las notificaciones se cargarán aquí dinámicamente --}}
+                                        <p class="py-4 px-4 text-sm text-gray-500 text-center">Cargando...</p>
+                                    </div>
+                                    <a href="{{ route('clientes.notifications.index') }}" class="block bg-gray-50 text-center py-2 text-sm font-medium text-blue-600 hover:bg-gray-100">Ver todas las notificaciones</a>
+                                </div>
+                            </div>
+
+                            <a href="{{ route('clientes.profile') }}"
                                class="text-white hover:text-orange-500 transition duration-200 flex items-center p-6 rounded-full hover:bg-white hover:bg-opacity-10 relative group">
                                 <i class="fas fa-user"></i>
                                 <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
@@ -352,96 +373,250 @@
         </main>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white">
-        <!-- Grid principal -->
-        <div class="container mx-auto px-4 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <!-- Columna 1: Información de la empresa -->
-                <div>
-                    <h3 class="text-lg font-bold mb-4">El Bodegazo</h3>
-                    <p class="text-gray-400 mb-4">Tu tienda de confianza para todos tus productos favoritos.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white transition">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white transition">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white transition">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Columna 2: Enlaces rápidos -->
-                <div>
-                    <h3 class="text-lg font-bold mb-4">Enlaces Rápidos</h3>
-                    <ul class="space-y-2">
-                        <li>
-                            <a href="{{ route('welcome') }}" class="text-gray-400 hover:text-white transition">Inicio</a>
-                        </li>
-                        <li>
-                            <a href="#" class="text-gray-400 hover:text-white transition">Sobre Nosotros</a>
-                        </li>
-                        <li>
-                            <a href="#" class="text-gray-400 hover:text-white transition">Contacto</a>
-                        </li>
-                        <li>
-                            <a href="#" class="text-gray-400 hover:text-white transition">Blog</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Columna 3: Políticas -->
-                <div>
-                    <h3 class="text-lg font-bold mb-4">Políticas</h3>
-                    <ul class="space-y-2">
-                        <li>
-                            <a href="{{ route('clientes.politicas.terminos') }}" class="text-gray-400 hover:text-white transition">Términos y Condiciones</a>
-                        </li>
-                        <li>
-                            <a href="#" class="text-gray-400 hover:text-white transition">Política de Privacidad</a>
-                        </li>
-                        <li>
-                            <a href="#" class="text-gray-400 hover:text-white transition">Política de Cookies</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Columna 4: Seguridad -->
-                <div>
-                    <h3 class="text-lg font-bold mb-4">Seguridad</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-center space-x-2">
-                            <i class="fas fa-shield-alt text-green-500"></i>
-                            <span class="text-gray-400">Compra 100% Segura</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <i class="fas fa-lock text-green-500"></i>
-                            <span class="text-gray-400">Datos Protegidos</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <i class="fas fa-credit-card text-green-500"></i>
-                            <span class="text-gray-400">Pagos Seguros</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Barra inferior -->
-        <div class="bg-gray-950 py-4">
-            <div class="container mx-auto px-4">
-                <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                    <div class="text-gray-400 text-align-center ">
-                        &copy; {{ date('Y') }} El Bodegazo. Todos los derechos reservados.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <!-- Footer solo para clientes -->
+    @auth
+        @if(auth()->user()->idRolUsu == 2)
+            @include('partials.clienteFooter')
+        @endif
+    @endauth
 
     @stack('scripts')
+    
+    @php
+        $flashSuccess = session('success') ?? session('status');
+    @endphp
+    @if ($flashSuccess)
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var mensaje = @json($flashSuccess);
+            if (window.mostrarNotificacion) {
+                window.mostrarNotificacion(mensaje, 'success');
+            } else {
+                var notificacion = document.createElement('div');
+                notificacion.className = 'fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transition-all duration-300 bg-green-500 text-white';
+                notificacion.innerHTML = '<div class="flex items-center"><i class="fas fa-check-circle mr-2"></i><span>' + mensaje + '</span></div>';
+                document.body.appendChild(notificacion);
+                setTimeout(function() {
+                    notificacion.style.opacity = '0';
+                    setTimeout(function() {
+                        if (document.body.contains(notificacion)) {
+                            document.body.removeChild(notificacion);
+                        }
+                    }, 300);
+                }, 3000);
+            }
+        });
+    </script>
+    @endif
+    
+    <!-- JavaScript del carrito -->
+    <script>
+        // Funcionalidad global del carrito de compras
+        document.addEventListener('DOMContentLoaded', function() {
+            // Funcionalidad del carrito
+            const agregarCarritoBtns = document.querySelectorAll('.agregar-carrito-btn');
+            
+            agregarCarritoBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Verificar si el usuario está autenticado
+                    @auth
+                        agregarAlCarrito(this);
+                    @else
+                        // Si no está autenticado, redirigir al login
+                        window.location.href = "{{ route('login') }}";
+                    @endauth
+                });
+            });
+
+            // Función para agregar al carrito
+            function agregarAlCarrito(btn) {
+                const productoId = btn.getAttribute('data-producto-id');
+                const productoNombre = btn.getAttribute('data-producto-nombre');
+                const productoPrecio = btn.getAttribute('data-producto-precio');
+                const productoStock = parseInt(btn.getAttribute('data-producto-stock'));
+                const cantidadInputId = btn.getAttribute('data-cantidad-input');
+                
+                // Obtener cantidad (desde input personalizado o por defecto 1)
+                let cantidad = 1;
+                if (cantidadInputId) {
+                    const cantidadInput = document.getElementById(cantidadInputId);
+                    if (cantidadInput) {
+                        cantidad = parseInt(cantidadInput.value) || 1;
+                    }
+                }
+                
+                // Mostrar loading
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Agregando...';
+                btn.disabled = true;
+                
+                // Crear formulario para enviar datos
+                const formData = new FormData();
+                formData.append('producto_id', productoId);
+                formData.append('cantidad', cantidad);
+                formData.append('_token', '{{ csrf_token() }}');
+                
+                // Enviar petición
+                fetch('{{ route("clientes.carrito.agregar") }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Mostrar mensaje de éxito
+                        mostrarNotificacion('Producto agregado al carrito', 'success');
+                        
+                        // Actualizar contador del carrito si existe
+                        actualizarContadorCarrito();
+                        
+                        // Actualizar botón si el stock se agotó
+                        if (productoStock === 1) {
+                            btn.innerHTML = '<i class="fas fa-times mr-1"></i>Agotado';
+                            btn.classList.remove('bg-green-500', 'hover:bg-green-600', 'bg-blue-600', 'hover:bg-blue-700');
+                            btn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                        }
+                    } else {
+                        mostrarNotificacion(data.message || 'Error al agregar el producto', 'error');
+                        // Restaurar botón
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    mostrarNotificacion('Error de conexión', 'error');
+                    // Restaurar botón
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                });
+            }
+
+            // Función para mostrar notificaciones
+            function mostrarNotificacion(mensaje, tipo) {
+                const notificacion = document.createElement('div');
+                notificacion.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transition-all duration-300 ${
+                    tipo === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                }`;
+                notificacion.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="fas ${tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i>
+                        <span>${mensaje}</span>
+                    </div>
+                `;
+                
+                document.body.appendChild(notificacion);
+                
+                // Remover después de 3 segundos
+                setTimeout(() => {
+                    notificacion.style.opacity = '0';
+                    setTimeout(() => {
+                        if (document.body.contains(notificacion)) {
+                            document.body.removeChild(notificacion);
+                        }
+                    }, 300);
+                }, 3000);
+            }
+
+            // Función para actualizar contador del carrito
+            function actualizarContadorCarrito() {
+                fetch('{{ route("clientes.carrito.cantidad") }}')
+                    .then(response => response.json())
+                    .then(data => {
+                        const carritoCounters = document.querySelectorAll('.carrito-counter');
+                        carritoCounters.forEach(counter => {
+                            counter.textContent = data.cantidad;
+                            if (data.cantidad > 0) {
+                                counter.classList.remove('hidden');
+                            } else {
+                                counter.classList.add('hidden');
+                            }
+                        });
+                    })
+                    .catch(error => console.error('Error actualizando contador:', error));
+            }
+
+            // Hacer funciones globales para uso en otras vistas
+            window.agregarAlCarrito = agregarAlCarrito;
+            window.mostrarNotificacion = mostrarNotificacion;
+            window.actualizarContadorCarrito = actualizarContadorCarrito;
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const notificacionesLink = document.getElementById('notificaciones-link');
+            const notificacionesDropdown = document.getElementById('notificaciones-dropdown');
+            const notificacionesCount = document.getElementById('notificaciones-count');
+            const notificacionesList = document.getElementById('notificaciones-list');
+
+            if (notificacionesLink) { // Solo ejecutar si el usuario es cliente
+                function fetchNotifications() {
+                     fetch('{{ route("clientes.notifications.getUnread") }}')
+                        .then(response => response.json())
+                        .then(data => {
+                            notificacionesList.innerHTML = ''; // Limpiar lista
+
+                            if (data.count > 0) {
+                                notificacionesCount.textContent = data.count;
+                                notificacionesCount.style.display = 'flex';
+
+                                if (data.notifications.length > 0) {
+                                    data.notifications.forEach(notification => {
+                                        const a = document.createElement('a');
+                                        a.href = notification.data.url || '#';
+                                        a.className = 'block py-3 px-4 hover:bg-gray-100';
+
+                                        const p1 = document.createElement('p');
+                                        p1.className = 'text-sm text-gray-800';
+                                        p1.textContent = notification.data.message;
+
+                                        const p2 = document.createElement('p');
+                                        p2.className = 'text-xs text-gray-500';
+                                        p2.textContent = notification.created_at_human;
+
+                                        a.appendChild(p1);
+                                        a.appendChild(p2);
+                                        notificacionesList.appendChild(a);
+                                    });
+                                } else {
+                                    notificacionesList.innerHTML = '<p class="py-4 px-4 text-sm text-gray-500 text-center">No tienes notificaciones nuevas.</p>';
+                                }
+                            } else {
+                                notificacionesCount.style.display = 'none';
+                                notificacionesList.innerHTML = '<p class="py-4 px-4 text-sm text-gray-500 text-center">No tienes notificaciones nuevas.</p>';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching notifications:', error);
+                            notificacionesList.innerHTML = '<p class="py-4 px-4 text-sm text-red-500 text-center">Error al cargar notificaciones.</p>';
+                        });
+                }
+
+                notificacionesLink.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    notificacionesDropdown.classList.toggle('hidden');
+                });
+
+                document.addEventListener('click', function (e) {
+                    const container = document.getElementById('notification-container');
+                    if (container && !container.contains(e.target)) {
+                        notificacionesDropdown.classList.add('hidden');
+                    }
+                });
+
+                // Cargar notificaciones al cargar la página
+                fetchNotifications();
+
+                // Opcional: Recargar notificaciones periódicamente
+                // setInterval(fetchNotifications, 60000); // cada 60 segundos
+            }
+        });
+    </script>
 </body>
 </html>

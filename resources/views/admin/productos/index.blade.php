@@ -25,26 +25,7 @@
             Nuevo Producto
         </a>
     </div>
-
-    <!-- Mensajes de éxito/error -->
-    @if(session('success'))
-        <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-lg shadow-sm flex items-center">
-            <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <span class="font-medium text-green-800">{{ session('success') }}</span>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-lg shadow-sm flex items-center">
-            <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <span class="font-medium text-red-800">{{ session('error') }}</span>
-        </div>
-    @endif
-
+    
     <!-- Tarjetas de estadísticas -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         @foreach([
@@ -203,17 +184,8 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
                                 ${{ number_format($producto->precio_venta, 2) }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="w-24 bg-gray-200 rounded-full h-2.5 mr-2">
-                                        @php
-                                            $porcentaje = min(100, max(0, ($producto->canPro / 100) * 100));
-                                            $color = $producto->canPro < 10 ? 'bg-red-500' : ($producto->canPro < 30 ? 'bg-yellow-500' : 'bg-green-500');
-                                        @endphp
-                                        <div class="h-2.5 rounded-full {{ $color }}" style="width: {{ $porcentaje }}%"></div>
-                                    </div>
-                                    <span class="text-sm font-medium text-gray-700">{{ $producto->canPro ?? 0 }} {{ $producto->unidad_medida }}</span>
-                                </div>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold {{ $producto->stock_total <= 10 ? 'text-red-600' : 'text-gray-800' }}">
+                                {{ $producto->stock_total }} {{ $producto->unidad_medida }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 

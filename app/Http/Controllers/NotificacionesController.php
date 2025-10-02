@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Notificacion;
 use App\Models\Usuario;
+use App\Jobs\SendBulkNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NotificacionesController extends Controller
 {
@@ -56,6 +58,23 @@ class NotificacionesController extends Controller
      */
     public function store(Request $request)
     {
+        // Si es para "todos" (o "all"), la lógica es diferente
+        if ($request->input('idUsuNot') === 'all') { // <-- CORREGIDO: ahora comprueba 'all'
+            $validated = $request->validate([
+                'menNot' => 'required|string|max:255',
+                'url' => 'nullable|url|max:255',
+            ]);
+
+            // Despachamos la tarea para que se ejecute en segundo plano
+            SendBulkNotification::dispatch($validated['menNot'], $validated['url'] ?? null);
+
+            // Redirigimos inmediatamente con un mensaje de éxito
+            return redirect()
+                ->route('admin.notificaciones.index')
+                ->with('success', 'La notificación se ha puesto en cola para ser enviada a todos los usuarios.');
+        }
+
+        // Lógica para notificación individual
         $validated = $request->validate([
             'idUsuNot' => 'required|exists:usuarios,id',
             'menNot' => 'required|string|max:255',
@@ -65,9 +84,14 @@ class NotificacionesController extends Controller
 
         Notificacion::create($validated);
 
-        return redirect()
-            ->route('notificaciones.index')
-            ->with('success', 'Notificación creada correctamente');
+        return redirect()->route('admin.notificaciones.index')->with('success', 'Notificación enviada con éxito.');
+    }
+
+    public function marcarLeidas()
+    {
+        auth()->user()->notificaciones()->where('leido', false)->update(['leido' => true]);
+
+        return response()->json(['status' => 'success']);
     }
 
     /**
@@ -99,7 +123,7 @@ class NotificacionesController extends Controller
         $notificacion->update($validated);
 
         return redirect()
-            ->route('notificaciones.index')
+            ->route('admin.notificaciones.index')
             ->with('success', 'Notificación actualizada correctamente');
     }
 
@@ -112,7 +136,45 @@ class NotificacionesController extends Controller
         $notificacion->delete();
 
         return redirect()
-            ->route('notificaciones.index')
+            ->route('admin.notificaciones.index')
             ->with('success', 'Notificación eliminada exitosamente.');
+    }
+
+    /**
+     * Obtiene las notificaciones no leídas del usuario autenticado para el menú desplegable.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUnreadNotifications()
+    {
+        $user = Auth::user();
+        $notifications = $user->unreadNotifications()->latest()->take(5)->get();
+        $unreadCount = $user->unreadNotifications()->count();
+
+        return response()->json([
+            'notifications' => $notifications,
+            'unread_count' => $unreadCount,
+        ]);
+    }
+
+    public function getUnread()
+    {
+        return $this->getUnreadNotifications();
+    }
+
+    /**
+     * Muestra la página con todas las notificaciones para el usuario final.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function userIndex()
+    {
+        $user = Auth::user();
+        $notifications = $user->notifications()->latest()->paginate(15);
+
+        // Marcar todas las notificaciones como leídas al visitar la página
+        $user->unreadNotifications->markAsRead();
+
+        return view('notifications.index', compact('notifications'));
     }
 }

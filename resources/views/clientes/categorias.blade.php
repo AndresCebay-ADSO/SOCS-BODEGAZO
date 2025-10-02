@@ -55,17 +55,20 @@
                         <div class="text-sm text-gray-600 mb-2">
                             <span class="font-medium">Talla:</span> {{ $producto->tallPro }}
                         </div>
-                        <div class="flex items-center justify-between">
-                            <div>
+                        <div class="mb-3">
+                            <div class="text-center">
                                 <span class="text-xl font-bold text-gray-900">${{ number_format($producto->precio_venta, 2) }}</span>
-                                @if($producto->precio_venta < $producto->precio_compra)
-                                    <span class="text-sm text-gray-500 line-through ml-2">${{ number_format($producto->precio_compra, 2) }}</span>
-                                @endif
+                                
                             </div>
+                        </div>
+                        
+                        <!-- Botones centrados -->
+                        <div class="flex justify-center space-x-3">
                             <a href="{{ route('clientes.productos.show', $producto->idPro) }}" 
                                class="bg-primary-500 text-white px-3 py-1 rounded text-sm hover:bg-primary-600 transition">
                                 Ver detalles
                             </a>
+                            <x-carrito-button :producto="$producto" size="sm" />
                         </div>
                     </div>
                 </div>
@@ -107,17 +110,19 @@
                         <div class="text-sm text-gray-600 mb-2">
                             <span class="font-medium">Talla:</span> {{ $producto->tallPro }}
                         </div>
-                        <div class="flex items-center justify-between">
-                            <div>
+                        <div class="mb-3">
+                            <div class="text-center">
                                 <span class="text-xl font-bold text-gray-900">${{ number_format($producto->precio_venta, 2) }}</span>
-                                @if($producto->precio_venta < $producto->precio_compra)
-                                    <span class="text-sm text-gray-500 line-through ml-2">${{ number_format($producto->precio_compra, 2) }}</span>
-                                @endif
                             </div>
+                        </div>
+                        
+                        <!-- Botones centrados -->
+                        <div class="flex justify-center space-x-3">
                             <a href="{{ route('clientes.productos.show', $producto->idPro) }}" 
                                class="bg-primary-500 text-white px-3 py-1 rounded text-sm hover:bg-primary-600 transition">
                                 Ver detalles
                             </a>
+                            <x-carrito-button :producto="$producto" size="sm" />
                         </div>
                     </div>
                 </div>

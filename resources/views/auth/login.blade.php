@@ -22,19 +22,7 @@
             </div>
         @endif
 
-        <!-- Mensaje de sesión -->
-        @if (session('status'))
-            <div class="bg-green-100 text-green-800 text-sm p-3 rounded mb-4">
-                {{ session('status') }}
-            </div>
-        @endif
-
-        <!-- Mensaje de éxito -->
-        @if (session('success'))
-            <div class="bg-green-100 text-green-800 text-sm p-3 rounded mb-4">
-                {{ session('success') }}
-            </div>
-        @endif
+        
 
         <!-- Formulario -->
         <form method="POST" action="{{ route('login.post') }}" class="space-y-5">

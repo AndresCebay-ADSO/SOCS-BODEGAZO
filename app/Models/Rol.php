@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Rol extends Model
 {
+    protected $primaryKey = 'idRol';
+
     const SUPERADMIN = 0;
     const ADMIN = 1;
     const CLIENTE = 2;
 
     protected $table = 'roles';
-    protected $primaryKey = 'idRol';
 
     protected $fillable = [
         'tipRol', 'nivRol', 'desRol', 'estRol'

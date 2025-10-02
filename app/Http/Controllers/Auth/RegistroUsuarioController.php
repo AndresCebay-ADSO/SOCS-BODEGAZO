@@ -72,12 +72,12 @@ class RegistroUsuarioController extends Controller
 
             // Redirigir según nivel de rol
             switch ($usuario->rol->nivRol) {
-                case Rol::SUPERADMIN: // 0
-                    return redirect()->route('superadmin.dashboard')->with('success', '¡Bienvenido Superadministrador!');
-                case Rol::ADMIN: // 1
-                    return redirect()->route('admin.dashboard')->with('success', '¡Bienvenido administrador!');
-                case Rol::CLIENTE: // 2
-                    return redirect()->route('clientes.dashboard')->with('success', '¡Bienvenido!');
+                case 0: // Superadmin
+                    return redirect()->route('superadmin.dashboard')->with('success', '¡Bienvenido, ' . $usuario->nomUsu . ' (Superadministrador)!');
+                case 1: // Admin
+                    return redirect()->route('admin.dashboard')->with('success', '¡Bienvenido, ' . $usuario->nomUsu . ' (Administrador)!');
+                case 2: // Cliente
+                    return redirect()->route('clientes.dashboard')->with('success', '¡Bienvenido, ' . $usuario->nomUsu . '!');
                 default:
                     Auth::logout();
                     return redirect()->route('login')->withErrors([
@@ -126,8 +126,15 @@ class RegistroUsuarioController extends Controller
         DB::beginTransaction();
 
         try {
-            // Obtener el ID del rol cliente
-            $rolCliente = Rol::where('nivRol', Rol::CLIENTE)->firstOrFail();
+            // Obtener el ID del rol cliente por su nombre
+            $rolCliente = Rol::where('tipRol', 'Cliente')->first();
+
+            if (!$rolCliente) {
+                DB::rollBack();
+                return back()->withInput()->withErrors([
+                    'error' => 'El rol de cliente no está configurado. Contacta al administrador.'
+                ]);
+            }
 
             $usuario = Usuario::create([
                 'nomUsu'     => $request->nomUsu,
@@ -144,7 +151,11 @@ class RegistroUsuarioController extends Controller
 
             DB::commit();
 
-            return redirect()->route('login')->with('success', '¡Registro exitoso! Por favor inicia sesión.');
+            // Iniciar sesión automáticamente después del registro
+            Auth::login($usuario);
+
+            // Redirigir al dashboard del cliente
+            return redirect()->route('clientes.dashboard')->with('success', '¡Bienvenido, ' . $usuario->nomUsu . '!');
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error('Error en registro: ' . $e->getMessage());

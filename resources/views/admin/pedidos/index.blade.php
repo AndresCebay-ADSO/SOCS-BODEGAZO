@@ -19,15 +19,6 @@
         </div>
     </div>
 
-    <!-- Mensajes de éxito -->
-    @if(session('success'))
-        <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-lg shadow-sm flex items-center">
-            <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <span class="font-medium text-green-800">{{ session('success') }}</span>
-        </div>
-    @endif
 
     <!-- Tarjetas de estadísticas -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">

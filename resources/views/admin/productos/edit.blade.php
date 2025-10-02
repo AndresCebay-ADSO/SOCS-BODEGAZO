@@ -3,8 +3,7 @@
 @section('title', 'Editar Producto - Administración')
 
 @section('content')
-<div class="container mx-auto py-8">
-    <div class="max-w-4xl mx-auto">
+    <div class="bg-white p-6 rounded-lg shadow-md">
         <!-- Header -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
             <div class="flex items-center mb-4 md:mb-0">
@@ -16,7 +15,7 @@
                     <p class="text-gray-600 text-sm">Actualiza la información del producto</p>
                 </div>
             </div>
-            <a href="{{ route('admin.productos.index') }}" 
+            <a href="{{ route('admin.productos.index') }}"
                class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-200 flex items-center">
                 <i class="fas fa-arrow-left mr-2"></i>
                 Volver
@@ -34,7 +33,7 @@
             </div>
         @endif
 
-        <form action="{{ route('admin.productos.update', $producto->idPro) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ route('admin.productos.update', ['producto' => $producto->idPro]) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
             @method('PUT')
             
@@ -56,7 +55,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-barcode text-gray-400"></i>
                                 </div>
-                                <input type="text" name="codPro" id="codPro" 
+                                <input type="text" name="codPro" id="codPro"
                                        value="{{ old('codPro', $producto->codPro) }}"
                                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 shadow-sm"
                                        placeholder="Código del producto" required>
@@ -72,7 +71,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-tag text-gray-400"></i>
                                 </div>
-                                <input type="text" name="nomPro" id="nomPro" 
+                                <input type="text" name="nomPro" id="nomPro"
                                        value="{{ old('nomPro', $producto->nomPro) }}"
                                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 shadow-sm"
                                        placeholder="Nombre del producto" required>
@@ -88,12 +87,12 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-th-large text-gray-400"></i>
                                 </div>
-                                <select name="idcatPro" id="idcatPro" 
+                                <select name="idcatPro" id="idcatPro"
                                         class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 shadow-sm appearance-none"
                                         required>
                                     <option value="">Selecciona una categoría</option>
                                     @foreach($categorias as $categoria)
-                                        <option value="{{ $categoria->idCat }}" 
+                                        <option value="{{ $categoria->idCat }}"
                                                 {{ old('idcatPro', $producto->idcatPro) == $categoria->idCat ? 'selected' : '' }}>
                                             {{ $categoria->nomCat }}
                                         </option>
@@ -124,7 +123,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-copyright text-gray-400"></i>
                                 </div>
-                                <input type="text" name="marPro" id="marPro" 
+                                <input type="text" name="marPro" id="marPro"
                                        value="{{ old('marPro', $producto->marPro) }}"
                                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 shadow-sm"
                                        placeholder="Marca del producto">
@@ -140,7 +139,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-palette text-gray-400"></i>
                                 </div>
-                                <input type="text" name="colPro" id="colPro" 
+                                <input type="text" name="colPro" id="colPro"
                                        value="{{ old('colPro', $producto->colPro) }}"
                                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 shadow-sm"
                                        placeholder="Color del producto">
@@ -156,10 +155,33 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-ruler text-gray-400"></i>
                                 </div>
-                                <input type="text" name="tallPro" id="tallPro" 
+                                <input type="text" name="tallPro" id="tallPro"
                                        value="{{ old('tallPro', $producto->tallPro) }}"
                                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 shadow-sm"
                                        placeholder="Talla del producto">
+                            </div>
+                        </div>
+
+                        <!-- Unidad de Medida -->
+                        <div>
+                            <label for="unidad_medida" class="block text-sm font-medium text-gray-700 mb-2">
+                                Unidad de Medida <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-box text-gray-400"></i>
+                                </div>
+                                <select name="unidad_medida" id="unidad_medida"
+                                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 shadow-sm appearance-none"
+                                        required>
+                                    <option value="UND" {{ old('unidad_medida', $producto->unidad_medida) == 'UND' ? 'selected' : '' }}>Unidad (UND)</option>
+                                    <option value="KG" {{ old('unidad_medida', $producto->unidad_medida) == 'KG' ? 'selected' : '' }}>Kilogramo (KG)</option>
+                                    <option value="LT" {{ old('unidad_medida', $producto->unidad_medida) == 'LT' ? 'selected' : '' }}>Litro (LT)</option>
+                                    <option value="MTS" {{ old('unidad_medida', $producto->unidad_medida) == 'MTS' ? 'selected' : '' }}>Metros (MTS)</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <i class="fas fa-chevron-down text-gray-400"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -184,7 +206,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-shopping-cart text-gray-400"></i>
                                 </div>
-                                <input type="number" name="precio_compra" id="precio_compra" 
+                                <input type="number" name="precio_compra" id="precio_compra"
                                        value="{{ old('precio_compra', $producto->precio_compra) }}"
                                        step="0.01" min="0"
                                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 shadow-sm"
@@ -201,7 +223,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-tags text-gray-400"></i>
                                 </div>
-                                <input type="number" name="precio_venta" id="precio_venta" 
+                                <input type="number" name="precio_venta" id="precio_venta"
                                        value="{{ old('precio_venta', $producto->precio_venta) }}"
                                        step="0.01" min="0"
                                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 shadow-sm"
@@ -228,38 +250,31 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-box text-gray-400"></i>
                                 </div>
-                                <input type="number" name="canPro" id="canPro" 
+                                <input type="number" name="canPro" id="canPro"
                                        value="{{ old('canPro', $producto->canPro) }}"
                                        min="0"
                                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 shadow-sm"
-                                       placeholder="0" required>
+                                       placeholder="0" required disabled>
                             </div>
                         </div>
 
-                        <!-- Imagen -->
+                       <!-- Imagen -->
                         <div>
                             <label for="imagen" class="block text-sm font-medium text-gray-700 mb-2">
                                 Imagen del Producto
                             </label>
                             <div class="space-y-3">
-                                <input type="file" name="imagen" id="imagen" 
+                                <input type="file" name="imagen" id="imagen"
                                        accept="image/*"
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 shadow-sm">
                                 
-                                @if($producto->imagen)
-                                    <div class="mt-3">
-                                        <p class="text-sm text-gray-600 mb-2">Imagen actual:</p>
-                                        <img src="{{ asset('storage/productos/'.$producto->imagen) }}" 
-                                             alt="{{ $producto->nomPro }}" 
-                                             class="w-32 h-32 object-cover rounded-lg border border-gray-200">
-                                    </div>
-                                @endif
-                                
+                                <!-- Vista previa unificada -->
                                 <div class="mt-3">
-                                    <p class="text-sm text-gray-600 mb-2">Vista previa:</p>
-                                    <img id="imagen-preview" src="{{ asset('images/default-product.png') }}" 
-                                         alt="Vista previa" 
-                                         class="w-32 h-32 object-contain rounded-lg border border-gray-200 bg-gray-50">
+                                    <p class="text-sm text-gray-600 mb-2">Vista Previa:</p>
+                                    <img id="imagen-preview"
+                                         src="{{ $producto->imagen ? asset('storage/productos/'.$producto->imagen) : asset('images/default-product.png') }}"
+                                         alt="Vista previa del producto"
+                                         class="w-32 h-32 object-cover rounded-lg border border-gray-200 bg-gray-50">
                                 </div>
                             </div>
                         </div>
@@ -284,7 +299,7 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-power-off text-gray-400"></i>
                             </div>
-                            <select name="estPro" id="estPro" 
+                            <select name="estPro" id="estPro"
                                     class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 shadow-sm appearance-none"
                                     required>
                                 <option value="Activo" {{ old('estPro', $producto->estPro) == 'Activo' ? 'selected' : '' }}>Activo</option>
@@ -299,7 +314,7 @@
                     <!-- Activo -->
                     <div class="flex items-center">
                         <div class="flex items-center h-5">
-                            <input type="checkbox" name="activo" value="1" 
+                            <input type="checkbox" name="activo" value="1"
                                    class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition duration-200"
                                    {{ old('activo', $producto->activo) ? 'checked' : '' }}>
                         </div>
@@ -324,23 +339,21 @@
 
             <!-- Botones de acción -->
             <div class="flex justify-end space-x-4 border-t pt-6">
-                <a href="{{ route('admin.productos.index') }}" 
+                <a href="{{ route('admin.productos.index') }}"
                    class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition duration-200 flex items-center shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
                     <i class="fas fa-times mr-2"></i>
                     Cancelar
                 </a>
-                <button type="submit" 
+                <button type="submit"
                         class="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg shadow-md transition duration-300 flex items-center transform hover:-translate-y-0.5 hover:shadow-lg">
                     <i class="fas fa-save mr-2"></i>
                     Actualizar Producto
                 </button>
             </div>
         </form>
-    </div>
-</div>
+@endsection
 
-<!-- Script para vista previa de imagen -->
-@section('scripts')
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const imagenInput = document.getElementById('imagen');
@@ -359,4 +372,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endsection
+@endpush

@@ -30,5 +30,32 @@
 <body class="bg-secondary-100 text-gray-800">
     @yield('content')
     @stack('scripts')
+
+    @php
+        $flashSuccess = session('success') ?? session('status');
+    @endphp
+    @if ($flashSuccess)
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var mensaje = @json($flashSuccess);
+            if (window.mostrarNotificacion) {
+                window.mostrarNotificacion(mensaje, 'success');
+            } else {
+                var notificacion = document.createElement('div');
+                notificacion.className = 'fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transition-all duration-300 bg-green-500 text-white';
+                notificacion.innerHTML = '<div class="flex items-center"><i class="fas fa-check-circle mr-2"></i><span>' + mensaje + '</span></div>';
+                document.body.appendChild(notificacion);
+                setTimeout(function() {
+                    notificacion.style.opacity = '0';
+                    setTimeout(function() {
+                        if (document.body.contains(notificacion)) {
+                            document.body.removeChild(notificacion);
+                        }
+                    }, 300);
+                }, 3000);
+            }
+        });
+    </script>
+    @endif
 </body>
 </html>

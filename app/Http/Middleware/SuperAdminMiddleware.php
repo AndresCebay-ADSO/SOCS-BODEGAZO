@@ -9,15 +9,12 @@ class SuperAdminMiddleware
 {
     public function handle($request, Closure $next)
     {
-        if (!Auth::check()) {
-            return redirect()->route('login');
+        // Verificar si el usuario está autenticado y si su rol tiene el nivel de superadmin (0)
+        if (Auth::check() && optional(Auth::user()->rol)->nivRol == 0) {
+            return $next($request);
         }
 
-        // Verifica el rol usando idRolUsu (3 para superadmin según la base de datos)
-        if (Auth::user()->idRolUsu != 3) {
-            abort(403, 'No tienes permiso para acceder a esta área');
-        }
-
-        return $next($request);
+        // Si no es Super Administrador, redirige o muestra un error
+        abort(403, 'Acceso no autorizado');
     }
 }

@@ -2,6 +2,10 @@
 
 @section('title', 'Gestión de Inventario')
 
+@push('styles')
+    {{-- Aquí puedes añadir estilos específicos para esta vista si es necesario --}}
+@endpush
+
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <!-- Encabezado mejorado con icono -->
@@ -96,7 +100,7 @@
                 <h3 class="mt-4 text-lg font-medium text-gray-900">No hay registros de inventario</h3>
                 <p class="mt-1 text-gray-500">No se encontraron productos en el inventario</p>
                 <div class="mt-6">
-                    <a href="{{ route('inventarios.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                    <a href="{{ route('admin.inventarios.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
                         <i class="fas fa-plus mr-2"></i> Crear primer registro
                     </a>
                 </div>
@@ -232,3 +236,21 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        @if(session('success'))
+            if (typeof mostrarNotificacion === 'function') {
+                mostrarNotificacion('{{ session('success') }}', 'success');
+            }
+        @endif
+
+        @if(session('error'))
+            if (typeof mostrarNotificacion === 'function') {
+                mostrarNotificacion('{{ session('error') }}', 'error');
+            }
+        @endif
+    });
+</script>
+@endpush

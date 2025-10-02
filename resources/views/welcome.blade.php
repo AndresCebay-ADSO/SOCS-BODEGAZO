@@ -39,7 +39,7 @@
 @endauth
 <body class="bg-gray-100 font-sans">
     <!-- Barra de navegación -->
-    <nav class="bg-primary-500 py-3 px-4 shadow-md sticky top-0 z-50">
+    <nav class="bg-primary-500 py-8 px-8 shadow-md">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <!-- Logo y buscador (mobile) -->
             <div class="w-full md:w-auto flex justify-between items-center">
@@ -74,57 +74,17 @@
     </nav>
 
     <!-- Categorías destacadas -->
-    <div class="bg-white py-4 shadow-sm sticky top-16 z-40">
+    <div class="bg-white py-4 shadow-sm">
         <div class="container mx-auto px-4">
             <div class="category-scroll flex overflow-x-auto space-x-8 pb-2">
+                @foreach($categorias as $categoria)
                 <a href="#" class="flex flex-col items-center min-w-fit hover:text-primary-500 transition" data-require-login>
                     <div class="bg-secondary-100 p-3 rounded-full mb-1 hover:bg-blue-100 transition">
-                        <i class="fas fa-running text-xl text-gray-800"></i>
+                        <i class="fas fa-tag text-xl text-gray-800"></i>
                     </div>
-                    <span class="text-sm font-medium">Deportivos</span>
+                    <span class="text-sm font-medium">{{ $categoria->nomCat }}</span>
                 </a>
-                <a href="#" class="flex flex-col items-center min-w-fit hover:text-primary-500 transition" data-require-login>
-                    <div class="bg-secondary-100 p-3 rounded-full mb-1 hover:bg-blue-100 transition">
-                        <i class="fas fa-briefcase text-xl text-gray-800"></i>
-                    </div>
-                    <span class="text-sm font-medium">Formales</span>
-                </a>
-                <a href="#" class="flex flex-col items-center min-w-fit hover:text-primary-500 transition" data-require-login>
-                    <div class="bg-secondary-100 p-3 rounded-full mb-1 hover:bg-blue-100 transition">
-                        <i class="fas fa-tshirt text-xl text-gray-800"></i>
-                    </div>
-                    <span class="text-sm font-medium">Casuales</span>
-                </a>
-                <a href="#" class="flex flex-col items-center min-w-fit hover:text-primary-500 transition" data-require-login>
-                    <div class="bg-secondary-100 p-3 rounded-full mb-1 hover:bg-blue-100 transition">
-                        <i class="fas fa-child text-xl text-gray-800"></i>
-                    </div>
-                    <span class="text-sm font-medium">Niños</span>
-                </a>
-                <a href="#" class="flex flex-col items-center min-w-fit hover:text-primary-500 transition" data-require-login>
-                    <div class="bg-secondary-100 p-3 rounded-full mb-1 hover:bg-blue-100 transition">
-                        <i class="fas fa-female text-xl text-gray-800"></i>
-                    </div>
-                    <span class="text-sm font-medium">Damas</span>
-                </a>
-                <a href="#" class="flex flex-col items-center min-w-fit hover:text-primary-500 transition" data-require-login>
-                    <div class="bg-secondary-100 p-3 rounded-full mb-1 hover:bg-blue-100 transition">
-                        <i class="fas fa-male text-xl text-gray-800"></i>
-                    </div>
-                    <span class="text-sm font-medium">Caballeros</span>
-                </a>
-                <a href="#" class="flex flex-col items-center min-w-fit hover:text-primary-500 transition" data-require-login>
-                    <div class="bg-secondary-100 p-3 rounded-full mb-1 hover:bg-blue-100 transition">
-                        <i class="fas fa-shoe-prints text-xl text-gray-800"></i>
-                    </div>
-                    <span class="text-sm font-medium">Calzado</span>
-                </a>
-                <a href="#" class="flex flex-col items-center min-w-fit hover:text-primary-500 transition" data-require-login>
-                    <div class="bg-secondary-100 p-3 rounded-full mb-1 hover:bg-blue-100 transition">
-                        <i class="fas fa-shopping-bag text-xl text-gray-800"></i>
-                    </div>
-                    <span class="text-sm font-medium">Accesorios</span>
-                </a>
+                @endforeach
             </div>
         </div>
     </div>
@@ -157,92 +117,51 @@
             </h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <!-- Producto 1 -->
+                @forelse($productosDestacados as $producto)
+                <!-- Producto {{ $loop->iteration }} -->
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300 hover:scale-105">
                     <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
-                             alt="Zapatillas Deportivas" class="w-full h-48 object-cover">
-                        <div class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-sm font-semibold">
-                            -20%
+                        <img src="{{ $producto->imaPro ? asset('storage/' . $producto->imaPro) : asset('images/default-product.png') }}" 
+                             alt="{{ $producto->nomPro }}" class="w-full h-48 object-cover">
+                        @if($producto->canPro <= 5)
+                        <div class="absolute top-2 right-2 bg-orange-500 text-white px-2 py-1 rounded-full text-sm font-semibold">
+                            ¡Últimas unidades!
                         </div>
+                        @endif
                     </div>
                     <div class="p-4">
-                        <h3 class="font-semibold text-lg mb-2">Zapatillas Deportivas</h3>
-                        <p class="text-gray-600 text-sm mb-3">Comodidad y estilo para tus actividades deportivas</p>
+                        <h3 class="font-semibold text-lg mb-2">{{ $producto->nomPro }}</h3>
+                        <p class="text-gray-600 text-sm mb-3">{{ Str::limit($producto->desPro, 60) }}</p>
                         <div class="flex justify-between items-center">
                             <div>
-                                <span class="text-gray-400 line-through">$89.99</span>
-                                <span class="text-xl font-bold text-blue-600 ml-2">$71.99</span>
+                                <span class="text-xl font-bold text-blue-600">${{ number_format($producto->precio_venta, 0, ',', '.') }}</span>
+                                @if($producto->canPro > 0)
+                                <div class="text-xs text-gray-500">Stock: {{ $producto->canPro }}</div>
+                                @endif
                             </div>
-                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition" data-require-login>
-                                <i class="fas fa-shopping-cart mr-1"></i>Agregar
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition agregar-carrito-btn" 
+                                    data-producto-id="{{ $producto->idPro }}" 
+                                    data-producto-nombre="{{ $producto->nomPro }}"
+                                    data-producto-precio="{{ $producto->precio_venta }}"
+                                    data-producto-stock="{{ $producto->canPro }}"
+                                    @if($producto->canPro <= 0) disabled @endif>
+                                <i class="fas fa-shopping-cart mr-1"></i>
+                                @if($producto->canPro <= 0)
+                                    Agotado
+                                @else
+                                    Agregar
+                                @endif
                             </button>
                         </div>
                     </div>
                 </div>
-
-                <!-- Producto 2 -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300 hover:scale-105">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
-                             alt="Camisa Formal" class="w-full h-48 object-cover">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-semibold text-lg mb-2">Camisa Formal</h3>
-                        <p class="text-gray-600 text-sm mb-3">Elegancia y profesionalismo para la oficina</p>
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <span class="text-xl font-bold text-blue-600">$45.99</span>
-                            </div>
-                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition" data-require-login>
-                                <i class="fas fa-shopping-cart mr-1"></i>Agregar
-                            </button>
-                        </div>
-                    </div>
+                @empty
+                <div class="col-span-full text-center py-12">
+                    <i class="fas fa-box-open text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">No hay productos disponibles</h3>
+                    <p class="text-gray-500">Pronto tendremos productos destacados para ti.</p>
                 </div>
-
-                <!-- Producto 3 -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300 hover:scale-105">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
-                             alt="Jeans Casuales" class="w-full h-48 object-cover">
-                        <div class="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-sm font-semibold">
-                            Nuevo
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-semibold text-lg mb-2">Jeans Casuales</h3>
-                        <p class="text-gray-600 text-sm mb-3">Estilo casual y comodidad para el día a día</p>
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <span class="text-xl font-bold text-blue-600">$59.99</span>
-                            </div>
-                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition" data-require-login>
-                                <i class="fas fa-shopping-cart mr-1"></i>Agregar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Producto 4 -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300 hover:scale-105">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
-                             alt="Tenis Urbanos" class="w-full h-48 object-cover">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-semibold text-lg mb-2">Tenis Urbanos</h3>
-                        <p class="text-gray-600 text-sm mb-3">Estilo urbano y comodidad para la ciudad</p>
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <span class="text-xl font-bold text-blue-600">$79.99</span>
-                            </div>
-                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition" data-require-login>
-                                <i class="fas fa-shopping-cart mr-1"></i>Agregar
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
     </section>
@@ -339,35 +258,129 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Redirección forzada para cualquier acción
-        const protectedElements = document.querySelectorAll(
-            '[data-require-login], #search-form, [href="#"]'
-        );
-
-        protectedElements.forEach(element => {
-            element.addEventListener('click', function(e) {
+        // Funcionalidad del carrito
+        const agregarCarritoBtns = document.querySelectorAll('.agregar-carrito-btn');
+        
+        agregarCarritoBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
                 e.preventDefault();
-                // Redirigir inmediatamente al login
-                window.location.href = "{{ route('login') }}";
+                
+                // Verificar si el usuario está autenticado
+                @auth
+                    agregarAlCarrito(this);
+                @else
+                    // Si no está autenticado, redirigir al login
+                    window.location.href = "{{ route('login') }}";
+                @endauth
             });
         });
 
-        // Redirección por inactividad (5 segundos)
-        let inactivityTimer = setTimeout(() => {
-            window.location.href = "{{ route('login') }}";
-        }, 5000);
+        // Función para agregar al carrito
+        function agregarAlCarrito(btn) {
+            const productoId = btn.getAttribute('data-producto-id');
+            const productoNombre = btn.getAttribute('data-producto-nombre');
+            const productoPrecio = btn.getAttribute('data-producto-precio');
+            const productoStock = parseInt(btn.getAttribute('data-producto-stock'));
+            
+            // Mostrar loading
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Agregando...';
+            btn.disabled = true;
+            
+            // Crear formulario para enviar datos
+            const formData = new FormData();
+            formData.append('producto_id', productoId);
+            formData.append('cantidad', 1);
+            formData.append('_token', '{{ csrf_token() }}');
+            
+            // Enviar petición
+            fetch('{{ route("clientes.carrito.agregar") }}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mostrar mensaje de éxito
+                    mostrarNotificacion('Producto agregado al carrito', 'success');
+                    
+                    // Actualizar contador del carrito si existe
+                    actualizarContadorCarrito();
+                    
+                    // Actualizar botón si el stock se agotó
+                    if (productoStock === 1) {
+                        btn.innerHTML = '<i class="fas fa-times mr-1"></i>Agotado';
+                        btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                        btn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    }
+                } else {
+                    mostrarNotificacion(data.message || 'Error al agregar el producto', 'error');
+                    // Restaurar botón
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarNotificacion('Error de conexión', 'error');
+                // Restaurar botón
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        }
 
-        // Resetear temporizador con interacción
-        const resetTimer = () => {
-            clearTimeout(inactivityTimer);
-            inactivityTimer = setTimeout(() => {
+        // Función para mostrar notificaciones
+        function mostrarNotificacion(mensaje, tipo) {
+            const notificacion = document.createElement('div');
+            notificacion.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transition-all duration-300 ${
+                tipo === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+            }`;
+            notificacion.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i>
+                    <span>${mensaje}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notificacion);
+            
+            // Remover después de 3 segundos
+            setTimeout(() => {
+                notificacion.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(notificacion);
+                }, 300);
+            }, 3000);
+        }
+
+        // Función para actualizar contador del carrito
+        function actualizarContadorCarrito() {
+            fetch('{{ route("clientes.carrito.cantidad") }}')
+                .then(response => response.json())
+                .then(data => {
+                    const carritoCounter = document.querySelector('.carrito-counter');
+                    if (carritoCounter) {
+                        carritoCounter.textContent = data.cantidad;
+                        if (data.cantidad > 0) {
+                            carritoCounter.classList.remove('hidden');
+                        } else {
+                            carritoCounter.classList.add('hidden');
+                        }
+                    }
+                })
+                .catch(error => console.error('Error actualizando contador:', error));
+        }
+
+        // Redirección forzada para elementos que requieren login
+        const protectedElements = document.querySelectorAll('[data-require-login]');
+        protectedElements.forEach(element => {
+            element.addEventListener('click', function(e) {
+                e.preventDefault();
                 window.location.href = "{{ route('login') }}";
-            }, 5000);
-        };
-
-        // Eventos para resetear
-        ['mousemove', 'keydown', 'click', 'scroll'].forEach(event => {
-            document.addEventListener(event, resetTimer);
+            });
         });
     });
 </script>

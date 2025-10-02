@@ -89,7 +89,9 @@
                         </div>
                         <div>
                             <dt class="font-medium text-gray-500">Stock Actual</dt>
-                            <dd class="mt-1">{{ $producto->canPro }} {{ $producto->unidad_medida }}</dd>
+                            <dd class="mt-1 font-semibold {{ $stock_total <= 10 ? 'text-red-600' : 'text-gray-900' }}">
+                                {{ $stock_total }} {{ $producto->unidad_medida }}
+                            </dd>
                         </div>
                     </dl>
                 </section>

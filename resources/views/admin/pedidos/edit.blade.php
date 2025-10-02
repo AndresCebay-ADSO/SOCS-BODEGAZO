@@ -53,7 +53,7 @@
                 </div>
                 <select name="idUsuPed" class="pl-10 w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm appearance-none">
                     @foreach($usuarios as $usuario)
-                        <option value="{{ $usuario->idUsu }}" {{ $pedido->idUsuPed == $usuario->idUsu ? 'selected' : '' }}>
+                        <option value="{{ $usuario->id }}" {{ $pedido->idUsuPed == $usuario->id ? 'selected' : '' }}>
                             {{ $usuario->nomUsu }} {{ $usuario->apeUsu }}
                         </option>
                     @endforeach

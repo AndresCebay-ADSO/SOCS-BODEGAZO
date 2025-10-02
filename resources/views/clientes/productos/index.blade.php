@@ -45,27 +45,16 @@
                     <div class="text-sm text-gray-600 mb-2">
                         <span class="font-medium">Talla:</span> {{ $producto->tallPro }}
                     </div>
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <span class="text-xl font-bold text-gray-900">${{ number_format($producto->precio_venta, 2) }}</span>
-                            @if($producto->precio_venta < $producto->precio_compra)
-                                <span class="text-sm text-gray-500 line-through ml-2">${{ number_format($producto->precio_compra, 2) }}</span>
-                            @endif
-                        </div>
-                        <div class="flex space-x-2">
-                            <a href="{{ route('clientes.productos.show', $producto->idPro) }}" 
-                               class="bg-primary-500 text-white px-3 py-1 rounded text-sm hover:bg-primary-600 transition">
-                                Ver detalles
-                            </a>
-                            <form action="{{ route('clientes.carrito.agregar') }}" method="POST" class="inline">
-                                @csrf
-                                <input type="hidden" name="producto_id" value="{{ $producto->idPro }}">
-                                <input type="hidden" name="cantidad" value="1">
-                                <button type="submit" class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transition">
-                                    <i class="fas fa-cart-plus"></i>
-                                </button>
-                            </form>
-                        </div>
+                    <div class="text-sm text-gray-600 mb-2">
+                        <span class="text-xl font-bold text-gray-900">${{ number_format($producto->precio_venta, 2) }}</span>
+                    </div>
+                    <!-- Botones centrados -->
+                    <div class="flex justify-center space-x-3">
+                        <a href="{{ route('clientes.productos.show', $producto->idPro) }}" 
+                           class="bg-primary-500 text-white px-3 py-1 rounded text-sm hover:bg-primary-600 transition">
+                            Ver detalles
+                        </a>
+                        <x-carrito-button :producto="$producto" size="sm" />
                     </div>
                 </div>
             </div>
@@ -84,4 +73,4 @@
         </div>
     @endif
 </div>
-@endsection 
+@endsection

@@ -23,6 +23,7 @@ class Usuario extends Authenticatable
         'emaUsu',
         'passUsu',
         'idRolUsu',
+        'nivRol', // Añadido para permitir asignación masiva
         'estadoUsu',
     ];
 

@@ -104,92 +104,36 @@
         </h2>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <!-- Producto 1 -->
+            @forelse($productosDestacados as $producto)
             <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
                 <div class="relative">
-                    <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
-                         alt="Zapatillas Deportivas" class="w-full h-48 object-cover">
-                    <div class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-sm font-semibold">
-                        -20%
-                    </div>
+                    <img src="{{ $producto->imagen_url }}" 
+                         alt="{{ $producto->nomPro }}" class="w-full h-48 object-cover">
                 </div>
                 <div class="p-4">
-                    <h3 class="font-semibold text-lg mb-2">Zapatillas Deportivas</h3>
-                    <p class="text-gray-600 text-sm mb-3">Comodidad y estilo para tus actividades deportivas</p>
+                    <h3 class="font-semibold text-lg mb-2">{{ $producto->nomPro }}</h3>
+                    <p class="text-gray-600 text-sm mb-3">{{ Str::limit($producto->desPro, 60) }}</p>
                     <div class="flex justify-between items-center">
                         <div>
-                            <span class="text-gray-400 line-through">$89.99</span>
-                            <span class="text-xl font-bold text-blue-600 ml-2">$71.99</span>
+                            <span class="text-xl font-bold text-blue-600">${{ number_format($producto->precio_venta, 0, ',', '.') }}</span>
                         </div>
-                        <a href="{{ route('clientes.productos.index') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        <a href="{{ route('clientes.productos.show', $producto) }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
                             <i class="fas fa-shopping-cart mr-1"></i>Ver
                         </a>
                     </div>
                 </div>
             </div>
+            @empty
+            <div class="col-span-full text-center py-12">
+                <i class="fas fa-box-open text-6xl text-gray-300 mb-4"></i>
+                <p class="text-xl text-gray-500">No hay productos destacados en este momento.</p>
+                <p class="text-gray-400 mt-2">Vuelve a intentarlo más tarde.</p>
+            </div>
+            @endforelse
+        </div>
 
-            <!-- Producto 2 -->
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
-                <div class="relative">
-                    <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
-                         alt="Camisa Formal" class="w-full h-48 object-cover">
-                </div>
-                <div class="p-4">
-                    <h3 class="font-semibold text-lg mb-2">Camisa Formal</h3>
-                    <p class="text-gray-600 text-sm mb-3">Elegancia y profesionalismo para la oficina</p>
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <span class="text-xl font-bold text-blue-600">$45.99</span>
-                        </div>
-                        <a href="{{ route('clientes.productos.index') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                            <i class="fas fa-shopping-cart mr-1"></i>Ver
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Producto 3 -->
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
-                <div class="relative">
-                    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
-                         alt="Jeans Casuales" class="w-full h-48 object-cover">
-                    <div class="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-sm font-semibold">
-                        Nuevo
-                    </div>
-                </div>
-                <div class="p-4">
-                    <h3 class="font-semibold text-lg mb-2">Jeans Casuales</h3>
-                    <p class="text-gray-600 text-sm mb-3">Estilo casual y comodidad para el día a día</p>
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <span class="text-xl font-bold text-blue-600">$59.99</span>
-                        </div>
-                        <a href="{{ route('clientes.productos.index') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                            <i class="fas fa-shopping-cart mr-1"></i>Ver
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Producto 4 -->
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
-                <div class="relative">
-                    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
-                         alt="Tenis Urbanos" class="w-full h-48 object-cover">
-                </div>
-                <div class="p-4">
-                    <h3 class="font-semibold text-lg mb-2">Tenis Urbanos</h3>
-                    <p class="text-gray-600 text-sm mb-3">Estilo urbano y comodidad para la ciudad</p>
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <span class="text-xl font-bold text-blue-600">$79.99</span>
-                        </div>
-                        <a href="{{ route('clientes.productos.index') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                            <i class="fas fa-shopping-cart mr-1"></i>Ver
-                        </a>
-                    </div>
-                </div>
-            </div>
+        <div class="mt-12">
+            {{ $productosDestacados->links() }}
         </div>
     </div>
 </section>

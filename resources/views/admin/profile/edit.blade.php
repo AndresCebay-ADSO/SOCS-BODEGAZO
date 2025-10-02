@@ -42,18 +42,7 @@
                     </div>
                 @endif
                 
-                @if(session('success'))
-                    <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-lg">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <i class="fas fa-check-circle text-green-500"></i>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
-                            </div>
-                        </div>
-                    </div>
-                @endif
+                
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Campo Nombre -->

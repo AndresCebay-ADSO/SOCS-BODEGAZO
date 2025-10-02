@@ -13,7 +13,7 @@ class ProductoController extends Controller
 {
     public function index()
     {
-        $productos = Producto::with('categoria')
+        $productosQuery = Producto::with('categoria', 'inventarios')
             ->when(request('search'), function($query) {
                 return $query->where('nomPro', 'like', '%'.request('search').'%')
                             ->orWhere('codPro', 'like', '%'.request('search').'%');
@@ -24,8 +24,15 @@ class ProductoController extends Controller
             ->when(request('estado'), function($query) {
                 return $query->where('estPro', request('estado'));
             })
-            ->orderBy('nomPro', 'asc')
-            ->paginate(10);
+            ->orderBy('nomPro', 'asc');
+
+        $productos = $productosQuery->paginate(10);
+
+        // Calcular el stock total para cada producto
+        $productos->getCollection()->transform(function ($producto) {
+            $producto->stock_total = $producto->inventarios->sum('canInv');
+            return $producto;
+        });
 
         $categorias = Categoria::where('estCat', 'Activo')->get();
 
@@ -70,8 +77,12 @@ class ProductoController extends Controller
 
     public function show(Producto $producto)
     {
-        $producto->load('categoria', 'inventarios');
-        return view('admin.productos.show', compact('producto'));
+        $producto->load('categoria', 'inventarios.usuario');
+
+        // Calcular el stock total sumando los movimientos de inventario
+        $stock_total = $producto->inventarios->sum('canInv');
+
+        return view('admin.productos.show', compact('producto', 'stock_total'));
     }
 
     public function edit(Producto $producto)
@@ -82,28 +93,80 @@ class ProductoController extends Controller
 
     public function update(Request $request, Producto $producto)
     {
+        // Log de depuración para ver todos los datos de la solicitud
+        \Log::info('Inicio de la actualización del producto ID: ' . $producto->id);
+        \Log::info('Datos del request:', $request->all());
+        \Log::info('Archivos en el request:', $request->allFiles());
+    
         try {
-            $validated = $this->validateProducto($request, $producto);
-            $validated['activo'] = $request->has('activo') ? 1 : 0;
+            \DB::beginTransaction();
+            
+            \Log::info('Actualizando producto ID: ' . $producto->idPro);
+            \Log::info('Datos recibidos:', $request->all());
 
-            if($request->hasFile('imagen')) {
-                // Eliminar imagen anterior si existe
-                if ($producto->imagen) {
-                    Storage::disk('public')->delete('productos/'.$producto->imagen);
+            // 1. Validar todos los datos de entrada
+            $validated = $this->validateProducto($request, $producto);
+            \Log::info('Datos validados:', $validated);
+            
+            // 2. Preparar el array de datos para la actualización, excluyendo la imagen por ahora
+            $dataToUpdate = $validated;
+            unset($dataToUpdate['imagen']);
+
+            // 3. A��adir el estado 'activo'
+            $dataToUpdate['activo'] = $request->has('activo') ? 1 : 0;
+            \Log::info('Estado activo:', ['activo' => $dataToUpdate['activo']]);
+
+            // 4. Manejar la carga de la imagen si se subió una nueva
+            if ($request->hasFile('imagen')) {
+                \Log::info('Procesando nueva imagen');
+                try {
+                    // Eliminar imagen anterior de forma segura
+                    if ($producto->imagen) {
+                        \Log::info('Eliminando imagen anterior: ' . $producto->imagen);
+                        \Storage::disk('public')->delete('productos/' . $producto->imagen);
+                    }
+
+                    // Guardar la nueva imagen y añadir su nombre a los datos para actualizar
+                    $dataToUpdate['imagen'] = $this->guardarImagen($request->file('imagen'));
+                    \Log::info('Nueva imagen guardada:', ['imagen' => $dataToUpdate['imagen']]);
+
+                } catch (\Exception $e) {
+                    \Log::error('Error procesando imagen: ' . $e->getMessage());
+                    throw new \Exception('Error al procesar la imagen: ' . $e->getMessage());
                 }
-                $validated['imagen'] = $this->guardarImagen($request->file('imagen'));
             }
             
-            $producto->update($validated);
+            \Log::info('Datos finales a actualizar:', $dataToUpdate);
+            
+            // 5. Actualizar el producto en la base de datos
+            $resultado = $producto->update($dataToUpdate);
+            \Log::info('Resultado de la actualización:', ['success' => $resultado]);
+            
+            if (!$resultado) {
+                throw new \Exception('No se pudo actualizar el producto.');
+            }
+            
+            \DB::commit();
             
             return redirect()->route('admin.productos.index')
                             ->with('success', 'Producto actualizado correctamente');
+                            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \DB::rollBack();
+            \Log::error('Error de validación: ' . json_encode($e->errors()));
+            return back()->withErrors($e->errors())->withInput();
 
-        } catch(\Exception $e) {
-            return back()->with('error', 'Error al actualizar el producto: ' . $e->getMessage())
-                        ->withInput();
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Error actualizando producto: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return back()
+                ->withInput()
+                ->with('error', 'Error al actualizar el producto: ' . $e->getMessage());
         }
     }
+
 
     public function destroy(Producto $producto)
     {
@@ -133,7 +196,7 @@ class ProductoController extends Controller
             'colPro' => 'nullable|string|max:30',
             'tallPro' => 'nullable|string|max:10',
             'idcatPro' => 'required|exists:categorias,idCat',
-            'estPro' => 'required|string|in:Activo,Inactivo,Agotado',
+            'estPro' => 'required|string|in:Activo,Inactivo',
             'unidad_medida' => 'required|string|in:UND,KG,LT,MTS',
             'precio_compra' => 'nullable|numeric|min:0',
             'precio_venta' => 'required|numeric|min:0',
@@ -149,22 +212,55 @@ class ProductoController extends Controller
 
     protected function guardarImagen($imagen)
     {
-        try{
+        try {
+            \Log::info('Iniciando proceso de guardar imagen');
+            
+            // Asegurarse que el directorio existe
             $storagePath = storage_path('app/public/productos');
             if (!file_exists($storagePath)) {
+                \Log::info('Creando directorio de productos');
                 mkdir($storagePath, 0755, true);
             }
-            $imagenName = 'prod_'.time().'_'.Str::random(8).'.'.$imagen->getClientOriginalExtension();
-            $img = Image::make($imagen->getRealPath())
-                ->resize(800, 800, function ($constraint) {
+            
+            // Generar nombre único para la imagen
+            $extension = $imagen->getClientOriginalExtension();
+            $imagenName = 'prod_'.time().'_'.Str::random(8).'.'.$extension;
+            \Log::info('Nombre de imagen generado: ' . $imagenName);
+            
+            // Mover el archivo directamente
+            $imagen->move($storagePath, $imagenName);
+            \Log::info('Imagen movida correctamente');
+            
+            $rutaCompleta = $storagePath.'/'.$imagenName;
+            
+            // Verificar que el archivo existe y procesar con Intervention Image
+            if (file_exists($rutaCompleta)) {
+                \Log::info('Archivo guardado, procesando con Intervention Image');
+                
+                $img = Image::make($rutaCompleta);
+                $img->resize(800, 800, function ($constraint) {
                     $constraint->aspectRatio();
                     $constraint->upsize();
                 });
-            // Guardar imagen en el directorio
-            $img->save($storagePath.'/'.$imagenName, 85);
+                $img->save($rutaCompleta, 85);
+                
+                \Log::info('Imagen procesada y guardada correctamente');
+            } else {
+                throw new \Exception('El archivo no se guardó correctamente');
+            }
+            
             return $imagenName;
-        }catch(\Exception $e) {
+        } catch(\Exception $e) {
             \Log::error('Error al guardar la imagen: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            // Si el archivo se creó pero hubo un error al procesarlo, intentar eliminarlo
+            $rutaCompleta = $storagePath.'/'.$imagenName ?? '';
+            if (file_exists($rutaCompleta)) {
+                unlink($rutaCompleta);
+                \Log::info('Archivo temporal eliminado después del error');
+            }
+            
             throw new \Exception('Error al procesar la imagen: ' . $e->getMessage());
         }
     }

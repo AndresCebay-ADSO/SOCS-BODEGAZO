@@ -20,8 +20,8 @@ class AdminMiddleware
 
         $user = Auth::user();
         
-        // Verificar si el usuario tiene rol de admin (1) o superadmin (3)
-        if (!in_array($user->idRolUsu, [1, 3])) {
+        // Verificar si el rol del usuario es admin (1) o superadmin (0) a través de la relación
+        if (!in_array(optional($user->rol)->nivRol, [0, 1])) {
             abort(403, 'Acceso no autorizado para administradores');
         }
 
