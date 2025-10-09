@@ -80,9 +80,7 @@
                         <!-- Logo y menú móvil -->
                         <div class="w-full lg:w-auto flex justify-between items-center">
                             <a href="{{ route('clientes.dashboard') }}" class="flex items-center space-x-3 text-white hover:text-blue-200 transition">
-                                <div class="bg-white bg-opacity-20 p-2 rounded-lg">
-                                    <i class="fas fa-store text-2xl"></i>
-                                </div>
+                                <img src="{{ asset('images/elbodegazo.jpeg') }}" alt="Logo El Bodegazo" class="w-16 h-16 rounded-full border-4 border-white shadow-lg object-cover">
                                 <div>
                                     <h1 class="text-2xl font-bold">El Bodegazo</h1>
                                     <p class="text-xs text-blue-200">Tu tienda de confianza</p>
@@ -152,14 +150,29 @@
                                 <div id="notificaciones-dropdown" class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl overflow-hidden z-50 hidden">
                                     <div class="py-2 px-4 text-gray-700 font-bold border-b">Notificaciones</div>
                                     <div id="notificaciones-list" class="divide-y">
-                                        {{-- Las notificaciones se cargarán aquí dinámicamente --}}
-                                        <p class="py-4 px-4 text-sm text-gray-500 text-center">Cargando...</p>
+                                        {{-- Este es el contenedor del menú desplegable de notificaciones --}}
+                                        <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl overflow-hidden z-20">
+                                            <div class="py-2">
+                                                <div id="notification-items">
+                                                    {{-- Las notificaciones se cargarán aquí dinámicamente --}}
+                                                    <p class="py-4 px-4 text-sm text-gray-500 text-center">Cargando...</p>
+                                                </div>
+                                                <a href="{{ route('clientes.notifications.index') }}" class="block bg-gray-50 text-center py-2 text-sm font-medium text-blue-600 hover:bg-gray-100">Ver todas las notificaciones</a>
+                                            </div>
+                                        </div>
+                                        
+                                        <a href="{{ route('clientes.profile.show') }}"
+                                           class="text-white hover:text-orange-500 transition duration-200 flex items-center p-6 rounded-full hover:bg-white hover:bg-opacity-10 relative group">
+                                            <i class="fas fa-user"></i>
+                                            <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                                                Mi Perfil
+                                            </span>
+                                        </a>
                                     </div>
-                                    <a href="{{ route('clientes.notifications.index') }}" class="block bg-gray-50 text-center py-2 text-sm font-medium text-blue-600 hover:bg-gray-100">Ver todas las notificaciones</a>
                                 </div>
                             </div>
 
-                            <a href="{{ route('clientes.profile') }}"
+                            <a href="{{ route('clientes.profile.show') }}"
                                class="text-white hover:text-orange-500 transition duration-200 flex items-center p-6 rounded-full hover:bg-white hover:bg-opacity-10 relative group">
                                 <i class="fas fa-user"></i>
                                 <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
@@ -188,7 +201,7 @@
                                     <span class="bg-red-500 text-white text-xs rounded-full px-2 py-1 ml-2">{{ $cantidad }}</span>
                                 @endif
                             </a>
-                            <a href="{{ route('clientes.profile') }}" class="text-white hover:text-orange-300 transition block py-2">
+                            <a href="{{ route('clientes.profile.show') }}" class="text-white hover:text-orange-300 transition block py-2">
                                 <i class="fas fa-user mr-2"></i> Mi cuenta
                             </a>
                         </div>

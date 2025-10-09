@@ -59,14 +59,17 @@ class NotificacionesController extends Controller
     public function store(Request $request)
     {
         // Si es para "todos" (o "all"), la lógica es diferente
-        if ($request->input('idUsuNot') === 'all') { // <-- CORREGIDO: ahora comprueba 'all'
+        if ($request->input('idUsuNot') === 'all') {
             $validated = $request->validate([
                 'menNot' => 'required|string|max:255',
-                'url' => 'nullable|url|max:255',
+                // Ya no se procesa la 'url' del formulario para evitar vulnerabilidades.
             ]);
 
+            // Generamos una URL segura que apunta a la lista de notificaciones del cliente.
+            $clientUrl = route('notifications.user.index');
+
             // Despachamos la tarea para que se ejecute en segundo plano
-            SendBulkNotification::dispatch($validated['menNot'], $validated['url'] ?? null);
+            SendBulkNotification::dispatch($validated['menNot'], $clientUrl);
 
             // Redirigimos inmediatamente con un mensaje de éxito
             return redirect()
@@ -148,18 +151,27 @@ class NotificacionesController extends Controller
     public function getUnreadNotifications()
     {
         $user = Auth::user();
-        $notifications = $user->unreadNotifications()->latest()->take(5)->get();
-        $unreadCount = $user->unreadNotifications()->count();
+        
+        if (!$user || !$user->hasRole('cliente')) {
+            return response()->json(['count' => 0, 'notifications' => []]);
+        }
+
+        $unreadNotifications = $user->unreadNotifications;
+
+        $notificationsData = $unreadNotifications->take(5)->map(function ($notification) {
+            return [
+                'id' => $notification->id,
+                // Apuntar a la nueva ruta de detalle
+                'url' => route('notifications.user.show', $notification->id),
+                'message' => $notification->data['message'],
+                'created_at_human' => $notification->created_at->diffForHumans(),
+            ];
+        });
 
         return response()->json([
-            'notifications' => $notifications,
-            'unread_count' => $unreadCount,
+            'count' => $unreadNotifications->count(),
+            'notifications' => $notificationsData,
         ]);
-    }
-
-    public function getUnread()
-    {
-        return $this->getUnreadNotifications();
     }
 
     /**
@@ -175,6 +187,25 @@ class NotificacionesController extends Controller
         // Marcar todas las notificaciones como leídas al visitar la página
         $user->unreadNotifications->markAsRead();
 
-        return view('notifications.index', compact('notifications'));
+        // CORRECCIÓN: Apuntar a la vista correcta
+        return view('clientes.notifications.index', compact('notifications'));
+    }
+
+    /**
+     * Muestra una notificación específica para el usuario.
+     *
+     * @param string $id
+     * @return \Illuminate\View\View
+     */
+    public function userShow($id)
+    {
+        $user = Auth::user();
+        $notification = $user->notifications()->findOrFail($id);
+
+        // Marcar la notificación como leída al verla
+        $notification->markAsRead();
+
+        // CORRECCIÓN: Apuntar a la vista correcta
+        return view('clientes.notifications.show', compact('notification'));
     }
 }

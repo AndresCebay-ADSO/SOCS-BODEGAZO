@@ -83,7 +83,7 @@
             </a>
 
             <!-- Mi Perfil -->
-            <a href="{{ route('clientes.profile') }}" class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300 transform hover:-translate-y-2">
+            <a href="{{ route('clientes.profile.show') }}" class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300 transform hover:-translate-y-2">
                 <div class="bg-orange-600 text-white p-6 text-center">
                     <i class="fas fa-user text-4xl mb-4"></i>
                     <h3 class="text-xl font-bold">Mi Perfil</h3>
@@ -197,7 +197,7 @@
                 </div>
             </a>
             
-            <a href="{{ route('clientes.profile') }}" class="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-8 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-2">
+            <a href="{{ route('clientes.profile.edit') }}" class="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-8 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-2">
                 <div class="text-center">
                     <i class="fas fa-user-edit text-5xl mb-4"></i>
                     <h3 class="text-2xl font-bold mb-2">Editar Perfil</h3>

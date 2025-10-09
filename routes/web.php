@@ -89,9 +89,9 @@ Route::middleware(['auth'])->prefix('cliente')->name('clientes.')->group(functio
     Route::get('/categorias', [ClienteProductoController::class, 'categorias'])->name('categorias');
 
     // Perfil
-    Route::get('/profile', [UsuarioController::class, 'perfil'])->name('profile');
-    Route::get('/profile/edit', [UsuarioController::class, 'editProfile'])->name('profile.edit');
-    Route::put('/profile/update', [UsuarioController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/perfil', [UsuarioController::class, 'perfil'])->name('profile.show');
+    Route::get('/perfil/editar', [UsuarioController::class, 'editProfile'])->name('profile.edit');
+    Route::put('/perfil/update', [UsuarioController::class, 'updateProfile'])->name('profile.update');
 
     // Rutas de pedidos actualizadas
     Route::prefix('pedidos')->name('pedidos.')->group(function() {
@@ -121,14 +121,16 @@ Route::middleware(['auth'])->prefix('cliente')->name('clientes.')->group(functio
         Route::get('/cantidad', [CarritoController::class, 'obtenerCantidad'])->name('cantidad');
     });
 
+
     // Búsqueda
     Route::get('/buscar', [BusquedaController::class, 'buscar'])->name('buscar');
     Route::get('/autocompletar', [BusquedaController::class, 'autocompletar'])->name('autocompletar');
 
     // Notificaciones
-    Route::prefix('notifications')->name('notifications.')->middleware('role:3')->group(function () {
+    Route::prefix('notifications')->name('notifications.')->group(function () {
         Route::get('/', [NotificacionesController::class, 'userIndex'])->name('index');
         Route::get('/unread', [NotificacionesController::class, 'getUnreadNotifications'])->name('getUnread');
+        Route::get('/{id}', [NotificacionesController::class, 'userShow'])->name('show');
     });
 
     // Productos

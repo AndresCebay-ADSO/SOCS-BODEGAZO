@@ -7,12 +7,14 @@
     <div class="max-w-2xl mx-auto">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-primary-600">Editar Mi Perfil</h1>
-            <a href="{{ route('clientes.profile') }}" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition">
+            {{-- CORRECCIÓN: Apuntar a la ruta de visualización --}}
+            <a href="{{ route('clientes.profile.show') }}" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition">
                 <i class="fas fa-arrow-left mr-2"></i>Volver
             </a>
         </div>
 
         <div class="bg-white rounded-lg shadow-md p-6">
+            {{-- CORRECCIÓN: Apuntar a la ruta de actualización --}}
             <form action="{{ route('clientes.profile.update') }}" method="POST">
                 @csrf
                 @method('PUT')
@@ -138,7 +140,8 @@
 
                 <!-- Botones -->
                 <div class="flex justify-end space-x-4 mt-8">
-                    <a href="{{ route('clientes.profile') }}" 
+                    {{-- CORRECCIÓN: Apuntar a la ruta de visualización --}}
+                    <a href="{{ route('clientes.profile.show') }}" 
                        class="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition">
                         Cancelar
                     </a>
@@ -151,4 +154,4 @@
         </div>
     </div>
 </div>
-@endsection 
+@endsection

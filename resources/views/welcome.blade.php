@@ -39,14 +39,11 @@
 @endauth
 <body class="bg-gray-100 font-sans">
     <!-- Barra de navegación -->
-    <nav class="bg-primary-500 py-8 px-8 shadow-md">
+    <nav class="bg-primary-500 py-6 px-8 shadow-md">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <!-- Logo y buscador (mobile) -->
             <div class="w-full md:w-auto flex justify-between items-center">
-                <a href="{{ route('login') }}" class="text-2xl font-bold text-white">El Bodegazo</a>
-                <button class="md:hidden text-white" id="menu-toggle">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
+                <img src="{{ asset('images/elbodegazo.jpeg') }}" alt="Logo El Bodegazo" class="w-16 h-16 rounded-full border-4 border-white shadow-lg object-cover">
             </div>
             
             <!-- Buscador (desktop) -->
@@ -75,8 +72,8 @@
 
     <!-- Categorías destacadas -->
     <div class="bg-white py-4 shadow-sm">
-        <div class="container mx-auto px-4">
-            <div class="category-scroll flex overflow-x-auto space-x-8 pb-2">
+        <div class="container px-4">
+            <div class="category-scroll flex justify-center overflow-x-auto space-x-8 pb-2">
                 @foreach($categorias as $categoria)
                 <a href="#" class="flex flex-col items-center min-w-fit hover:text-primary-500 transition" data-require-login>
                     <div class="bg-secondary-100 p-3 rounded-full mb-1 hover:bg-blue-100 transition">
@@ -121,8 +118,8 @@
                 <!-- Producto {{ $loop->iteration }} -->
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300 hover:scale-105">
                     <div class="relative">
-                        <img src="{{ $producto->imaPro ? asset('storage/' . $producto->imaPro) : asset('images/default-product.png') }}" 
-                             alt="{{ $producto->nomPro }}" class="w-full h-48 object-cover">
+                        <img src="{{ $producto->imagen_url }}" 
+                         alt="{{ $producto->nomPro }}" class="w-full h-48 object-cover">
                         @if($producto->canPro <= 5)
                         <div class="absolute top-2 right-2 bg-orange-500 text-white px-2 py-1 rounded-full text-sm font-semibold">
                             ¡Últimas unidades!

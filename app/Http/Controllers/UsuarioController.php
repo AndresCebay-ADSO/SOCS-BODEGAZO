@@ -262,7 +262,7 @@ class UsuarioController extends Controller
             'TipdocUsu', 'numdocUsu'
         ]));
 
-        return redirect()->route('cliente.profile')->with('success', 'Perfil actualizado correctamente.');
+        return redirect()->route('clientes.profile.show')->with('success', 'Perfil actualizado correctamente.');
     }
 
     public function pedidoForm()
