@@ -8,12 +8,12 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             
             // Verificar si el usuario está autenticado
-            @auth
+            if (window.usuarioAutenticado) {
                 agregarAlCarrito(this);
-            @else
+            } else {
                 // Si no está autenticado, redirigir al login
-                window.location.href = "{{ route('login') }}";
-            @endauth
+                window.location.href = window.rutaLogin;
+            }
         });
     });
 
@@ -49,8 +49,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Mostrar mensaje de éxito
                 mostrarNotificacion('Producto agregado al carrito', 'success');
                 
-                // Actualizar contador del carrito si existe
-                actualizarContadorCarrito();
+                // Actualizar contador del carrito directamente con la cantidad devuelta
+                const carritoCounters = document.querySelectorAll('.carrito-counter');
+                carritoCounters.forEach(counter => {
+                    counter.textContent = data.cantidad;
+                    if (data.cantidad > 0) {
+                        counter.classList.remove('hidden');
+                    } else {
+                        counter.classList.add('hidden');
+                    }
+                });
                 
                 // Actualizar botón si el stock se agotó
                 if (productoStock === 1) {
@@ -100,26 +108,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 
-    // Función para actualizar contador del carrito
-    function actualizarContadorCarrito() {
-        fetch('{{ route("clientes.carrito.cantidad") }}')
-            .then(response => response.json())
-            .then(data => {
-                const carritoCounters = document.querySelectorAll('.carrito-counter');
-                carritoCounters.forEach(counter => {
-                    counter.textContent = data.cantidad;
-                    if (data.cantidad > 0) {
-                        counter.classList.remove('hidden');
-                    } else {
-                        counter.classList.add('hidden');
-                    }
-                });
-            })
-            .catch(error => console.error('Error actualizando contador:', error));
-    }
+    // Ya no necesitamos esta función, la eliminamos.
 
     // Hacer funciones globales para uso en otras vistas
     window.agregarAlCarrito = agregarAlCarrito;
     window.mostrarNotificacion = mostrarNotificacion;
-    window.actualizarContadorCarrito = actualizarContadorCarrito;
 });

@@ -1,93 +1,70 @@
 @extends('layouts.app')
 
-@section('title', 'Editar Notificación')
+@section('title', 'Editar Notificación - El Bodegazo')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-4 py-8 max-w-3xl">
+    <!-- Encabezado -->
     <div class="flex justify-between items-center mb-8">
-        <div class="flex items-center">
-            <div class="bg-blue-100 p-3 rounded-xl mr-4">
-                <i class="fas fa-bell text-blue-600 text-xl"></i>
+        <div class="flex items-center gap-4">
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-3 rounded-xl shadow-md">
+                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L14.732 5.232z"></path></svg>
             </div>
-            <h2 class="text-2xl font-bold text-gray-800">Editar Notificación #{{ $notificacion->idNot }}</h2>
+            <h1 class="text-3xl font-bold text-gray-800">Editar Notificación #{{ $notificacion->idNot }}</h1>
         </div>
-        <a href="{{ route('notificaciones.index') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
-            <i class="fas fa-arrow-left mr-2"></i> Volver
+        <a href="{{ route('admin.notificaciones.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-300 transform hover:scale-105 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+            Volver
         </a>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200 max-w-3xl mx-auto">
-        <form action="{{ route('notificaciones.update', $notificacion->idNot) }}" method="POST" class="p-6">
+    <!-- Formulario de edición -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-8">
+        <form action="{{ route('admin.notificaciones.update', $notificacion->idNot) }}" method="POST" novalidate>
             @csrf
             @method('PUT')
-            
+
             <!-- Destinatario -->
             <div class="mb-6">
-                <label for="idUsuNot" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                    <i class="fas fa-user text-blue-500 mr-2"></i>
-                    Destinatario <span class="text-red-500 ml-1">*</span>
-                </label>
-                <select name="idUsuNot" id="idUsuNot" required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                <label for="idUsuNot" class="block text-sm font-medium text-gray-700 mb-2">Destinatario <span class="text-red-500">*</span></label>
+                <select name="idUsuNot" id="idUsuNot" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 @error('idUsuNot') border-red-500 @enderror">
+                    <option value="">Seleccione un destinatario</option>
                     @foreach($usuarios as $usuario)
-                        <option value="{{ $usuario->id }}" {{ $notificacion->idUsuNot == $usuario->id ? 'selected' : '' }}>
+                        <option value="{{ $usuario->id }}" {{ old('idUsuNot', $notificacion->idUsuNot) == $usuario->id ? 'selected' : '' }}>
                             {{ $usuario->nomUsu }} {{ $usuario->apeUsu }} - {{ $usuario->emaUsu }}
                         </option>
                     @endforeach
                 </select>
+                @error('idUsuNot')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Mensaje -->
             <div class="mb-6">
-                <label for="menNot" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                    <i class="fas fa-comment-alt text-blue-500 mr-2"></i>
-                    Mensaje <span class="text-red-500 ml-1">*</span>
-                </label>
-                <textarea name="menNot" id="menNot" rows="4" required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150">{{ old('menNot', $notificacion->menNot) }}</textarea>
-            </div>
-
-            <!-- Fecha y Hora - Campo corregido -->
-            <div class="mb-6">
-                <label for="fechNot" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                    <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>
-                    Fecha y Hora <span class="text-red-500 ml-1">*</span>
-                </label>
-                <input type="datetime-local" name="fechNot" id="fechNot" required
-                    value="{{ $notificacion->fechNot instanceof \Carbon\Carbon ? $notificacion->fechNot->format('Y-m-d\TH:i') : \Carbon\Carbon::parse($notificacion->fechNot)->format('Y-m-d\TH:i') }}"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                <label for="menNot" class="block text-sm font-medium text-gray-700 mb-2">Mensaje <span class="text-red-500">*</span></label>
+                <textarea name="menNot" id="menNot" rows="4" required placeholder="Contenido de la notificación..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 @error('menNot') border-red-500 @enderror">{{ old('menNot', $notificacion->menNot) }}</textarea>
+                @error('menNot')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Estado -->
-            <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                    <i class="fas fa-toggle-on text-blue-500 mr-2"></i>
-                    Estado <span class="text-red-500 ml-1">*</span>
-                </label>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="flex items-center">
-                        <input type="radio" id="estNotActivo" name="estNot" value="Activo" {{ old('estNot', $notificacion->estNot) == 'Activo' ? 'checked' : '' }} required
-                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                        <label for="estNotActivo" class="ml-2 block text-sm text-gray-700">Activo</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="radio" id="estNotInactivo" name="estNot" value="Inactivo" {{ old('estNot', $notificacion->estNot) == 'Inactivo' ? 'checked' : '' }}
-                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                        <label for="estNotInactivo" class="ml-2 block text-sm text-gray-700">Inactivo</label>
-                    </div>
+            <div class="mb-8">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Estado <span class="text-red-500">*</span></label>
+                <div class="grid grid-cols-2 gap-6">
+                    <label class="flex items-center space-x-2"><input type="radio" name="estNot" value="Activo" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300" {{ old('estNot', $notificacion->estNot) == 'Activo' ? 'checked' : '' }} /><span class="text-gray-700">Activo</span></label>
+                    <label class="flex items-center space-x-2"><input type="radio" name="estNot" value="Inactivo" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300" {{ old('estNot', $notificacion->estNot) == 'Inactivo' ? 'checked' : '' }} /><span class="text-gray-700">Inactivo</span></label>
                 </div>
+                @error('estNot')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Botones -->
-            <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-                <a href="{{ route('notificaciones.index') }}" 
-                   class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-150">
-                    Cancelar
-                </a>
-                <button type="submit" 
-                        class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md transition duration-300">
-                    Guardar Cambios
-                </button>
+            <div class="flex flex-col-reverse sm:flex-row justify-end gap-4 border-t border-gray-200 pt-6">
+                <a href="{{ route('admin.notificaciones.index') }}" class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-150 text-center">Cancelar</a>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition duration-300 transform hover:scale-105">Actualizar Notificación</button>
             </div>
         </form>
     </div>

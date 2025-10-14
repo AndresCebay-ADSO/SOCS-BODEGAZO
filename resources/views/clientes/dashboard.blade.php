@@ -103,9 +103,9 @@
             Productos Destacados
         </h2>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="flex overflow-x-auto space-x-8 pb-4 hide-scrollbar">
             @forelse($productosDestacados as $producto)
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
+            <div class="flex-none w-80 bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
                 <div class="relative">
                     <img src="{{ $producto->imagen_url }}" 
                          alt="{{ $producto->nomPro }}" class="w-full h-48 object-cover">
@@ -173,38 +173,16 @@
     </div>
 </section>
 
-<!-- Acciones Rápidas -->
-<section class="py-16 bg-gray-50">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">
-            Acciones Rápidas
-        </h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <a href="{{ route('clientes.pedidos.create') }}" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-2">
-                <div class="text-center">
-                    <i class="fas fa-plus-circle text-5xl mb-4"></i>
-                    <h3 class="text-2xl font-bold mb-2">Nuevo Pedido</h3>
-                    <p class="text-blue-100">Realiza una nueva compra de productos</p>
-                </div>
-            </a>
-            
-            <a href="{{ route('clientes.pedidos.index') }}" class="bg-gradient-to-r from-green-600 to-green-700 text-white p-8 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-2">
-                <div class="text-center">
-                    <i class="fas fa-history text-5xl mb-4"></i>
-                    <h3 class="text-2xl font-bold mb-2">Historial</h3>
-                    <p class="text-green-100">Revisa tus pedidos anteriores</p>
-                </div>
-            </a>
-            
-            <a href="{{ route('clientes.profile.edit') }}" class="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-8 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-2">
-                <div class="text-center">
-                    <i class="fas fa-user-edit text-5xl mb-4"></i>
-                    <h3 class="text-2xl font-bold mb-2">Editar Perfil</h3>
-                    <p class="text-purple-100">Actualiza tus datos personales</p>
-                </div>
-            </a>
-        </div>
-    </div>
-</section>
+<style>
+    /* Oculta la barra de scroll en navegadores Webkit (Chrome, Safari, etc.) */
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Oculta la barra de scroll en Firefox y otros */
+    .hide-scrollbar {
+        -ms-overflow-style: none;  /* IE y Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+</style>
 @endsection

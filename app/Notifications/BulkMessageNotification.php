@@ -12,15 +12,17 @@ class BulkMessageNotification extends Notification
     use Queueable;
 
     protected $message;
+    protected $url;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($message)
+    public function __construct($message, $url)
     {
         $this->message = $message;
+        $this->url = $url;
     }
 
     /**
@@ -46,7 +48,7 @@ class BulkMessageNotification extends Notification
     {
         return [
             'message' => $this->message,
-            'url' => route('admin.notificaciones.index'), // URL a la que irá el usuario al hacer clic
+            'url' => $this->url, // Usar la URL correcta
         ];
     }
 }

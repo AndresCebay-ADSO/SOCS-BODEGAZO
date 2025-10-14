@@ -117,35 +117,28 @@
                         </h3>
                         
                         <div class="space-y-4">
-                            <div class="flex items-start border-b border-gray-100 pb-4">
-                                <div class="bg-blue-100 p-2 rounded-full text-blue-600 mr-3 mt-1">
-                                    <i class="fas fa-user-plus text-sm"></i>
+                            @forelse($recentActivities as $activity)
+                                <div class="flex items-start border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
+                                    <div class="bg-blue-100 p-2 rounded-full text-blue-600 mr-3 mt-1">
+                                        <i class="fas fa-user-clock text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">{{ $activity->accion }}</p>
+                                        <p class="text-sm text-gray-500">
+                                            {{ $activity->created_at->diffForHumans() }} por 
+                                            <span class="font-semibold">{{ $activity->usuario->nomUsu ?? 'Sistema' }}</span>
+                                        </p>
+                                        @if($activity->detalles)
+                                            <p class="text-xs text-gray-400 mt-1">{{ Str::limit($activity->detalles, 50) }}</p>
+                                        @endif
+                                    </div>
                                 </div>
-                                <div>
-                                    <p class="font-medium">Nuevo administrador registrado</p>
-                                    <p class="text-sm text-gray-500">Hoy a las {{ now()->subHours(2)->format('H:i') }}</p>
+                            @empty
+                                <div class="text-center py-4">
+                                    <i class="fas fa-folder-open text-3xl text-gray-300"></i>
+                                    <p class="mt-2 text-sm text-gray-500">No hay actividad reciente.</p>
                                 </div>
-                            </div>
-                            
-                            <div class="flex items-start border-b border-gray-100 pb-4">
-                                <div class="bg-blue-100 p-2 rounded-full text-blue-600 mr-3 mt-1">
-                                    <i class="fas fa-shield-alt text-sm"></i>
-                                </div>
-                                <div>
-                                    <p class="font-medium">Actualización de permisos</p>
-                                    <p class="text-sm text-gray-500">Ayer a las 16:30</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start">
-                                <div class="bg-blue-100 p-2 rounded-full text-blue-600 mr-3 mt-1">
-                                    <i class="fas fa-database text-sm"></i>
-                                </div>
-                                <div>
-                                    <p class="font-medium">Respaldo de base de datos</p>
-                                    <p class="text-sm text-gray-500">Lunes, 03:00</p>
-                                </div>
-                            </div>
+                            @endforelse
                         </div>
                         
                         <a href="#" class="inline-block mt-4 text-sm font-medium text-blue-600 hover:text-blue-800">

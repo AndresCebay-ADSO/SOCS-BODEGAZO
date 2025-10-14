@@ -27,9 +27,9 @@
             <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
                 <i class="fas fa-th-large text-primary-500 mr-3"></i>Todos los Productos
             </h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="flex overflow-x-auto space-x-6 pb-4 hide-scrollbar">
                 @foreach($productos as $producto)
-                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
+                <div class="flex-none w-72 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
                     <div class="relative">
                         <div class="w-full h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
                             <img src="{{ $producto->imagen_url }}" 
@@ -82,9 +82,9 @@
             <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
                 <i class="fas fa-tag text-primary-500 mr-3"></i>{{ $categoria->nomCat }}
             </h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="flex overflow-x-auto space-x-6 pb-4 hide-scrollbar">
                 @foreach($productos->where('idcatPro', $categoria->idCat) as $producto)
-                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
+                <div class="flex-none w-72 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
                     <div class="relative">
                         <div class="w-full h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
                             <img src="{{ $producto->imagen_url }}" 
@@ -168,4 +168,17 @@ document.addEventListener('DOMContentLoaded', function() {
     filtrarCategoria('todas');
 });
 </script>
-@endsection 
+
+<style>
+    /* Oculta la barra de scroll en navegadores Webkit (Chrome, Safari, etc.) */
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Oculta la barra de scroll en Firefox y otros */
+    .hide-scrollbar {
+        -ms-overflow-style: none;  /* IE y Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+</style>
+@endsection

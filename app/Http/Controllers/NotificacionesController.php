@@ -3,209 +3,115 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notificacion;
-use App\Models\Usuario;
-use App\Jobs\SendBulkNotification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class NotificacionesController extends Controller
 {
     /**
-     * Mostrar listado de notificaciones
+     * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        $query = Notificacion::with('usuario')
-                ->orderBy('fechNot', 'desc');
+        // Obtener todas las notificaciones, las más recientes primero, y paginarlas.
+        $notificaciones = Notificacion::latest()->paginate(15);
 
-        // Búsqueda por mensaje o destinatario
-        if ($request->has('search')) {
-            $searchTerm = $request->input('search');
-            $query->where(function($q) use ($searchTerm) {
-                $q->where('menNot', 'like', '%'.$searchTerm.'%')
-                ->orWhereHas('usuario', function($q) use ($searchTerm) {
-                    $q->where('nomUsu', 'like', '%'.$searchTerm.'%')
-                        ->orWhere('apeUsu', 'like', '%'.$searchTerm.'%')
-                        ->orWhere('emaUsu', 'like', '%'.$searchTerm.'%');
-                });
-            });
-        }
+        // Determinar la vista correcta según el rol del usuario (admin o superadmin)
+        $view = request()->is('superadmin/*') 
+            ? 'superadmin.notificaciones.index' 
+            : 'admin.notificaciones.index';
 
-        // Filtro por estado si está presente
-        if ($request->has('estado')) {
-            $query->where('estNot', $request->estado);
-        }
-
-        $notificaciones = $query->paginate(10);
-
-        return view('admin.notificaciones.index', compact('notificaciones'));
+        return view($view, compact('notificaciones'));
     }
 
     /**
-     * Mostrar formulario de creación
+     * Show the form for creating a new resource.
      */
-    public function create()
+    public function createAdmin()
     {
         return view('admin.notificaciones.create', [
-            'usuarios' => Usuario::where('estadoUsu', 'Activo')
-                            ->orderBy('nomUsu')
-                            ->get(['id', 'nomUsu', 'apeUsu', 'emaUsu'])
+            'usuarios' => Usuario::where('estadoUsu', 'Activo')->orderBy('nomUsu')->get(['id', 'nomUsu', 'apeUsu', 'emaUsu'])
         ]);
     }
 
     /**
-     * Almacenar nueva notificación
+     * Almacenar nueva notificación (Admin).
      */
-    public function store(Request $request)
+    public function storeAdmin(Request $request)
     {
-        // Si es para "todos" (o "all"), la lógica es diferente
-        if ($request->input('idUsuNot') === 'all') {
-            $validated = $request->validate([
-                'menNot' => 'required|string|max:255',
-                // Ya no se procesa la 'url' del formulario para evitar vulnerabilidades.
+        $request->validate([
+            'idUsuNot' => 'required',
+            'menNot' => 'required|string|max:255',
+        ]);
+
+        $idUsuNot = $request->input('idUsuNot');
+        $menNot = $request->input('menNot');
+        $fechNot = now();
+
+        if ($idUsuNot === 'all') {
+            $rolCliente = Rol::where('tipRol', 'cliente')->first();
+            if ($rolCliente) {
+                $clientes = Usuario::where('idRolUsu', $rolCliente->idRol)->get();
+                foreach ($clientes as $cliente) {
+                    Notificacion::create([
+                        'idUsuNot' => $cliente->id,
+                        'menNot' => $menNot,
+                        'fechNot' => $fechNot,
+                        'estNot' => 'Activo',
+                    ]);
+                }
+                $message = 'Notificaciones masivas enviadas con éxito.';
+            } else {
+                return redirect()->back()->with('error', 'Error: No se pudo encontrar el rol de cliente.');
+            }
+        } else {
+            Notificacion::create([
+                'idUsuNot' => $idUsuNot,
+                'menNot' => $menNot,
+                'fechNot' => $fechNot,
+                'estNot' => 'Activo',
             ]);
-
-            // Generamos una URL segura que apunta a la lista de notificaciones del cliente.
-            $clientUrl = route('notifications.user.index');
-
-            // Despachamos la tarea para que se ejecute en segundo plano
-            SendBulkNotification::dispatch($validated['menNot'], $clientUrl);
-
-            // Redirigimos inmediatamente con un mensaje de éxito
-            return redirect()
-                ->route('admin.notificaciones.index')
-                ->with('success', 'La notificación se ha puesto en cola para ser enviada a todos los usuarios.');
+            $message = 'Notificación enviada con éxito.';
         }
 
-        // Lógica para notificación individual
-        $validated = $request->validate([
-            'idUsuNot' => 'required|exists:usuarios,id',
-            'menNot' => 'required|string|max:255',
-            'fechNot' => 'required|date',
-            'estNot' => 'required|in:Activo,Inactivo'
-        ]);
-
-        Notificacion::create($validated);
-
-        return redirect()->route('admin.notificaciones.index')->with('success', 'Notificación enviada con éxito.');
+        return redirect()->route('admin.notificaciones.create')->with('success', $message);
     }
-
-    public function marcarLeidas()
-    {
-        auth()->user()->notificaciones()->where('leido', false)->update(['leido' => true]);
-
-        return response()->json(['status' => 'success']);
-    }
-
+    
     /**
-     * Mostrar formulario de edición
+     * Muestra el formulario para editar una notificación existente (Admin).
      */
-    public function edit($id)
+    public function editAdmin($id)
     {
         $notificacion = Notificacion::findOrFail($id);
-        $usuarios = Usuario::where('estadoUsu', 'Activo')
-                        ->orderBy('nomUsu')
-                        ->get(['id', 'nomUsu', 'apeUsu', 'emaUsu']);
-                        
+        $usuarios = Usuario::where('estadoUsu', 'Activo')->orderBy('nomUsu')->get(['id', 'nomUsu', 'apeUsu', 'emaUsu']);
+        
         return view('admin.notificaciones.edit', compact('notificacion', 'usuarios'));
     }
 
     /**
-     * Actualizar notificación existente
+     * Actualiza una notificación existente en la base de datos (Admin).
      */
-    public function update(Request $request, $id)
+    public function updateAdmin(Request $request, $id)
     {
-        $validated = $request->validate([
+        $request->validate([
             'idUsuNot' => 'required|exists:usuarios,id',
             'menNot' => 'required|string|max:255',
-            'fechNot' => 'required|date',
-            'estNot' => 'required|in:Activo,Inactivo'
+            'estNot' => 'required|in:Activo,Inactivo',
         ]);
 
         $notificacion = Notificacion::findOrFail($id);
-        $notificacion->update($validated);
+        $notificacion->update($request->all());
 
-        return redirect()
-            ->route('admin.notificaciones.index')
-            ->with('success', 'Notificación actualizada correctamente');
+        return redirect()->route('admin.notificaciones.index')->with('success', 'Notificación actualizada con éxito.');
     }
 
     /**
-     * Eliminar notificación
+     * Eliminar notificación (Admin).
      */
-    public function destroy($id)
+    public function destroyAdmin($id)
     {
         $notificacion = Notificacion::findOrFail($id);
         $notificacion->delete();
 
-        return redirect()
-            ->route('admin.notificaciones.index')
-            ->with('success', 'Notificación eliminada exitosamente.');
-    }
-
-    /**
-     * Obtiene las notificaciones no leídas del usuario autenticado para el menú desplegable.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function getUnreadNotifications()
-    {
-        $user = Auth::user();
-        
-        if (!$user || !$user->hasRole('cliente')) {
-            return response()->json(['count' => 0, 'notifications' => []]);
-        }
-
-        $unreadNotifications = $user->unreadNotifications;
-
-        $notificationsData = $unreadNotifications->take(5)->map(function ($notification) {
-            return [
-                'id' => $notification->id,
-                // Apuntar a la nueva ruta de detalle
-                'url' => route('notifications.user.show', $notification->id),
-                'message' => $notification->data['message'],
-                'created_at_human' => $notification->created_at->diffForHumans(),
-            ];
-        });
-
-        return response()->json([
-            'count' => $unreadNotifications->count(),
-            'notifications' => $notificationsData,
-        ]);
-    }
-
-    /**
-     * Muestra la página con todas las notificaciones para el usuario final.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function userIndex()
-    {
-        $user = Auth::user();
-        $notifications = $user->notifications()->latest()->paginate(15);
-
-        // Marcar todas las notificaciones como leídas al visitar la página
-        $user->unreadNotifications->markAsRead();
-
-        // CORRECCIÓN: Apuntar a la vista correcta
-        return view('clientes.notifications.index', compact('notifications'));
-    }
-
-    /**
-     * Muestra una notificación específica para el usuario.
-     *
-     * @param string $id
-     * @return \Illuminate\View\View
-     */
-    public function userShow($id)
-    {
-        $user = Auth::user();
-        $notification = $user->notifications()->findOrFail($id);
-
-        // Marcar la notificación como leída al verla
-        $notification->markAsRead();
-
-        // CORRECCIÓN: Apuntar a la vista correcta
-        return view('clientes.notifications.show', compact('notification'));
+        return redirect()->route('admin.notificaciones.index')->with('success', 'Notificación eliminada exitosamente.');
     }
 }

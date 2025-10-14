@@ -8,6 +8,8 @@ use App\Models\Rol;
 use App\Models\Pedido;
 use App\Models\FacturaElectronica;
 use App\Models\RegistroActividad;
+use App\Models\Producto;
+use App\Models\Notificacion; // <--- Añadir
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -37,25 +39,78 @@ class SuperAdminController extends Controller
             'total_administradores' => Usuario::whereIn('idRolUsu', [$adminRoleId, $superAdminRoleId])->count(),
             'pedidos_pendientes' => Pedido::where('estPed', 'pendiente')->count(),
             'facturacion_total' => FacturaElectronica::sum('total') ?? 0,
+            'notificaciones_sin_leer' => Notificacion::where('estNot', 'Activo')->count(), // <--- Añadir
         ];
+
+        // --- INICIO: NUEVAS CONSULTAS PARA GRÁFICOS ---
+
+        // Datos para el gráfico de ventas (últimos 7 días)
+        $salesDataWeekly = Pedido::selectRaw('DATE(fecPed) as date, COUNT(*) as count')
+            ->where('fecPed', '>=', now()->subDays(7)->startOfDay())
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'date' => Carbon::parse($item->date)->format('Y-m-d'),
+                    'count' => $item->count
+                ];
+            });
+
+        // Datos para el gráfico de ventas (últimos 30 días)
+        $salesDataMonthly = Pedido::selectRaw('DATE(fecPed) as date, COUNT(*) as count')
+            ->where('fecPed', '>=', now()->subDays(30)->startOfDay())
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'date' => Carbon::parse($item->date)->format('Y-m-d'),
+                    'count' => $item->count
+                ];
+            });
+        
+        // Datos para el gráfico de estado de inventario
+        $stockStatusData = [
+            'in_stock' => Producto::where('canPro', '>', 10)->count(),
+            'low_stock' => Producto::whereBetween('canPro', [1, 10])->count(),
+            'out_of_stock' => Producto::where('canPro', '=', 0)->count(),
+        ];
+
+        // --- FIN: NUEVAS CONSULTAS PARA GRÁFICOS ---
 
         $activityData = RegistroActividad::selectRaw('DATE_FORMAT(created_at, "%d %b") as date, COUNT(*) as count')
             ->where('created_at', '>=', now()->subDays(7))
             ->groupBy('date')
-            ->get()
-            ->map(function ($item) {
-                return ['date' => $item->date, 'count' => $item->count];
-            })->toArray();
+            ->orderBy('date')
+            ->get();
 
-        return view('superadmin.dashboard', [
-            'stats' => $stats,
-            'activityData' => $activityData
-        ]);
+        return view('superadmin.dashboard', compact(
+            'stats', 
+            'activityData',
+            'salesDataWeekly',
+            'salesDataMonthly',
+            'stockStatusData'
+        ));
     }
 
     public function show()
     {
-        return view('superadmin.profile.show', ['user' => Auth::user()]);
+        $adminRoleId = Rol::where('nivRol', Rol::ADMIN)->value('idRol');
+        $superAdminRoleId = Rol::where('nivRol', Rol::SUPERADMIN)->value('idRol');
+
+        $totalUsers = Usuario::count();
+        $totalAdmins = Usuario::whereIn('idRolUsu', [$adminRoleId, $superAdminRoleId])->count();
+        $todayActions = RegistroActividad::whereDate('created_at', today())->count();
+        $recentActivities = RegistroActividad::with('usuario')->latest()->take(5)->get();
+
+        return view('superadmin.profile.show', [
+            'user' => Auth::user(),
+            'totalUsers' => $totalUsers,
+            'totalAdmins' => $totalAdmins,
+            'todayActions' => $todayActions,
+            'recentActivities' => $recentActivities,
+        ]);
     }
 
     public function edit()

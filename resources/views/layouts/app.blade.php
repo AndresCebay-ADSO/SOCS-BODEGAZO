@@ -61,7 +61,7 @@
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-          integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
           crossorigin="anonymous" referrerpolicy="no-referrer" />
     
     @stack('styles')
@@ -80,10 +80,8 @@
                         <!-- Logo y menú móvil -->
                         <div class="w-full lg:w-auto flex justify-between items-center">
                             <a href="{{ route('clientes.dashboard') }}" class="flex items-center space-x-3 text-white hover:text-blue-200 transition">
-                                <img src="{{ asset('images/elbodegazo.jpeg') }}" alt="Logo El Bodegazo" class="w-16 h-16 rounded-full border-4 border-white shadow-lg object-cover">
-                                <div>
-                                    <h1 class="text-2xl font-bold">El Bodegazo</h1>
-                                    <p class="text-xs text-blue-200">Tu tienda de confianza</p>
+                                <div class="w-16 h-16 rounded-full border-4 border-white shadow-lg overflow-hidden flex-shrink-0">
+                                    <img src="{{ asset('images/elbodegazo.jpeg') }}" alt="Logo El Bodegazo" class="w-full h-full object-cover">
                                 </div>
                             </a>
                             <button class="lg:hidden text-white hover:text-blue-200 transition" id="menu-toggle-client">
@@ -268,7 +266,7 @@
                             if(!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
                                 searchSuggestions.classList.add('hidden');
                             }
-                        });
+});
 
                         // Navegación con teclado
                         searchInput.addEventListener('keydown', function(e) {
@@ -280,7 +278,7 @@
                                 if(activeSuggestion) {
                                     activeSuggestion.classList.remove('active');
                                     const next = activeSuggestion.nextElementSibling;
-                                    if(next) {
+                                if(next) {
                                         next.classList.add('active');
                                     } else {
                                         suggestions[0].classList.add('active');
@@ -334,6 +332,7 @@
                                             <div class="text-sm text-gray-500">${suggestion.subtitulo}</div>
                                             <div class="text-sm font-semibold text-green-600">$${suggestion.precio}</div>
                                         </div>
+                                        <div class="text-xs text-gray-400">Producto</div>
                                         <div class="text-xs text-gray-400">Producto</div>
                                     </div>
                                 `;
@@ -570,8 +569,18 @@
 
             if (notificacionesLink) { // Solo ejecutar si el usuario es cliente
                 function fetchNotifications() {
-                     fetch('{{ route("clientes.notifications.getUnread") }}')
-                        .then(response => response.json())
+                     fetch('{{ route("clientes.notifications.getUnread") }}', {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                     })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
                         .then(data => {
                             notificacionesList.innerHTML = ''; // Limpiar lista
 
@@ -607,6 +616,7 @@
                         })
                         .catch(error => {
                             console.error('Error fetching notifications:', error);
+                            // Simplificado: Mostrar un mensaje de error limpio
                             notificacionesList.innerHTML = '<p class="py-4 px-4 text-sm text-red-500 text-center">Error al cargar notificaciones.</p>';
                         });
                 }

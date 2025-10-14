@@ -21,7 +21,7 @@
             <svg class="w-4 h-4 md:w-5 md:h-5 {{ request()->routeIs('superadmin.profile.*') ? 'text-blue-600' : 'text-gray-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
-            <span class="hidden sm:inline">Perfil</span>
+            <span>Perfil</span>
         </a>
 
         <!-- Dashboard -->
@@ -31,7 +31,7 @@
             <svg class="w-4 h-4 md:w-5 md:h-5 {{ request()->routeIs('superadmin.dashboard') ? 'text-blue-600' : 'text-gray-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M4 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0h6" />
             </svg>
-            <span class="hidden sm:inline">Inicio</span>
+            <span>Inicio</span>
         </a>
 
         <!-- Gestión de Usuarios (clientes) -->
@@ -41,7 +41,7 @@
             <svg class="w-4 h-4 md:w-5 md:h-5 {{ request()->routeIs('superadmin.usuarios.*') ? 'text-blue-600' : 'text-gray-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
-            <span class="hidden sm:inline">Gestión de Usuarios</span>
+            <span>Gestión de Usuarios</span>
         </a>
 
         <!-- Gestión de Administración (unificado: admins, roles, permisos) -->
@@ -51,7 +51,7 @@
             <svg class="w-4 h-4 md:w-5 md:h-5 {{ request()->routeIs('superadmin.admin.management.*') ? 'text-blue-600' : 'text-gray-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.477 5.273 7.5 4 4.382 4c-1.483 0-2.93.345-4.025.957a1 1 0 00-.357 1.357C.345 7.93 1 9.477 1 11s-.655 3.07-1 4.686a1 1 0 00.357 1.357C1.452 17.655 2.9 18 4.382 18c3.118 0 6.095-1.273 7.618-2.253m0 0c1.523.98 4.5 2.253 7.618 2.253 1.483 0 2.93-.345 4.025-.957a1 1 0 00.357-1.357C23.655 14.07 23 12.523 23 11s.655-3.07 1-4.686a1 1 0 00-.357-1.357C22.548 4.345 21.1 4 19.618 4c-3.118 0-6.095 1.273-7.618 2.253z" />
             </svg>
-            <span class="hidden sm:inline">Gestión de Administración</span>
+            <span>Gestión de Administración</span>
         </a>
 
         <!-- Productos -->
@@ -61,7 +61,7 @@
             <svg class="w-4 h-4 md:w-5 md:h-5 {{ request()->routeIs('superadmin.productos.*') ? 'text-blue-600' : 'text-gray-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
             </svg>
-            <span class="hidden sm:inline">Productos</span>
+            <span>Productos</span>
         </a>
 
         <!-- Pedidos -->
@@ -71,7 +71,7 @@
             <svg class="w-4 h-4 md:w-5 md:h-5 {{ request()->routeIs('superadmin.pedidos.*') ? 'text-blue-600' : 'text-gray-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
-            <span class="hidden sm:inline">Pedidos</span>
+            <span>Pedidos</span>
         </a>
 
         <!-- Inventarios -->
@@ -81,7 +81,7 @@
             <svg class="w-4 h-4 md:w-5 md:h-5 {{ request()->routeIs('superadmin.inventarios.*') ? 'text-blue-600' : 'text-gray-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
-            <span class="hidden sm:inline">Inventarios</span>
+            <span>Inventarios</span>
         </a>
 
         <!-- Notificaciones -->
@@ -91,7 +91,7 @@
             <svg class="w-4 h-4 md:w-5 md:h-5 {{ request()->routeIs('superadmin.notificaciones.*') ? 'text-blue-600' : 'text-gray-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1-1m-4 0V9m4 8H5m4-8v8m4-8V9m-4 0a4 4 0 00-8 0v8a4 4 0 008 0V9z" />
             </svg>
-            <span class="hidden sm:inline">Notificaciones</span>
+            <span>Notificaciones</span>
         </a>
     </nav>
     
@@ -104,7 +104,7 @@
                 <svg class="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 11-6 0v-1m3-12V4a1 1 0 011-1h4a1 1 0 011 1v3" />
                 </svg>
-                <span class="hidden sm:inline">Cerrar sesión</span>
+                <span>Cerrar sesión</span>
             </button>
         </form>
     </div>

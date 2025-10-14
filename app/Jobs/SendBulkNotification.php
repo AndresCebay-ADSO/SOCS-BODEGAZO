@@ -24,15 +24,17 @@ class SendBulkNotification implements ShouldQueue
     public $timeout = 300;
 
     protected $message;
+    protected $url;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($message)
+    public function __construct($message, $url)
     {
         $this->message = $message;
+        $this->url = $url;
     }
 
     /**
@@ -43,7 +45,7 @@ class SendBulkNotification implements ShouldQueue
     public function handle()
     {
         // Creamos la notificación que se va a enviar
-        $notificationToSend = new BulkMessageNotification($this->message);
+        $notificationToSend = new BulkMessageNotification($this->message, $this->url);
 
         // Obtenemos los usuarios activos en lotes de 100 para no agotar la memoria
         Usuario::where('estadoUsu', 'Activo')->chunkById(100, function ($usuarios) use ($notificationToSend) {

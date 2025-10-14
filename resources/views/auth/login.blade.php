@@ -78,6 +78,20 @@
                 <i class="fas fa-sign-in-alt mr-2"></i>Ingresar
             </button>
 
+            <!-- Separador -->
+            <div class="relative flex items-center my-4">
+                <div class="flex-grow border-t border-gray-300"></div>
+                <span class="flex-shrink mx-4 text-sm text-gray-500">O continuar con</span>
+                <div class="flex-grow border-t border-gray-300"></div>
+            </div>
+
+            <!-- Botón de Google -->
+            <a href="{{ route('google.redirect') }}"
+                class="w-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-2 rounded-lg font-semibold transition duration-200">
+                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" class="w-5 h-5 mr-3">
+                Iniciar sesión con Google
+            </a>
+
             <!-- Enlaces -->
             <div class="text-center text-sm mt-4">
                 <a href="{{ route('password.request') }}" class="text-primary-600 hover:underline">¿Olvidaste tu contraseña?</a>
@@ -91,6 +105,41 @@
 </div>
 
 <script>
+    // Función para mostrar notificaciones dinámicas
+    function showNotification(message, type) {
+        const bgColor = type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+        const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
+
+        // Crear el elemento de la notificación
+        const notification = document.createElement('div');
+        notification.className = `fixed top-5 right-5 flex items-center p-4 rounded-lg shadow-lg z-50 ${bgColor}`;
+        notification.innerHTML = `
+            <i class="fas ${icon} mr-3"></i>
+            <span>${message}</span>
+            <button type="button" class="ml-4 text-lg font-semibold" onclick="this.parentElement.remove()">×</button>
+        `;
+
+        // Añadir al cuerpo del documento
+        document.body.appendChild(notification);
+
+        // Eliminar después de 5 segundos
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+    }
+
+    // Esperar a que el DOM esté cargado
+    document.addEventListener('DOMContentLoaded', function() {
+        // Comprobar si hay mensajes de sesión y mostrarlos con JS
+        @if (session('success'))
+            showNotification("{{ session('success') }}", 'success');
+        @endif
+
+        @if (session('error'))
+            showNotification("{{ session('error') }}", 'error');
+        @endif
+    });
+
     class PasswordToggle {
         constructor(buttonElement) {
             this.button = buttonElement;

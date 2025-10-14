@@ -88,17 +88,29 @@
             <!-- Contraseña -->
             <div>
                 <label class="block text-sm font-medium text-gray-700">Contraseña</label>
-                <input type="password" name="passUsu" required
-                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 py-2 px-3"
-                    placeholder="••••••••">
+                <div class="relative">
+                    <input type="password" id="passUsu" name="passUsu" required
+                        class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 py-2 px-3 pr-10"
+                        placeholder="••••••••">
+                    <button type="button" id="togglePassword"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-primary-600 focus:outline-none">
+                        <i id="toggleIcon" class="fas fa-eye"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- Confirmar contraseña -->
             <div>
                 <label class="block text-sm font-medium text-gray-700">Confirmar Contraseña</label>
-                <input type="password" name="passUsu_confirmation" required
-                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 py-2 px-3"
-                    placeholder="••••••••">
+                <div class="relative">
+                    <input type="password" id="passUsu_confirmation" name="passUsu_confirmation" required
+                        class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 py-2 px-3 pr-10"
+                        placeholder="••••••••">
+                    <button type="button" id="togglePasswordConfirmation"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-primary-600 focus:outline-none">
+                        <i id="toggleIconConfirmation" class="fas fa-eye"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- Términos y condiciones -->
@@ -165,6 +177,41 @@ function mostrarResumen() {
 
 document.getElementById('cerrar-modal').addEventListener('click', function() {
     document.getElementById('modal-terminos').classList.add('hidden');
+});
+
+// Script para limpiar el formulario al cargar la página
+window.addEventListener('pageshow', function(event) {
+    // Reseteamos el formulario para limpiar todos los campos
+    const form = document.querySelector('form');
+    if (form) {
+        form.reset();
+    }
+});
+
+// Script para mostrar/ocultar contraseñas
+document.addEventListener("DOMContentLoaded", function () {
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('passUsu');
+    const toggleIcon = document.getElementById('toggleIcon');
+
+    const togglePasswordConfirmation = document.getElementById('togglePasswordConfirmation');
+    const passwordConfirmationInput = document.getElementById('passUsu_confirmation');
+    const toggleIconConfirmation = document.getElementById('toggleIconConfirmation');
+
+    function toggleVisibility(input, icon) {
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        icon.classList.toggle('fa-eye', !isPassword);
+        icon.classList.toggle('fa-eye-slash', isPassword);
+    }
+
+    togglePassword.addEventListener('click', function () {
+        toggleVisibility(passwordInput, toggleIcon);
+    });
+
+    togglePasswordConfirmation.addEventListener('click', function () {
+        toggleVisibility(passwordConfirmationInput, toggleIconConfirmation);
+    });
 });
 </script>
 @endpush

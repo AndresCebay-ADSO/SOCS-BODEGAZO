@@ -23,8 +23,17 @@ use App\Http\Controllers\BusquedaController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\SuperAdmin\UsuarioController as SuperAdminUsuarioController;
 use App\Http\Controllers\SuperAdmin\AdminManagementController;
-
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\PayUController;
+
+/*
+|--------------------------------------------------------------------------
+| RUTAS DE AUTENTICACIÓN CON GOOGLE
+|--------------------------------------------------------------------------
+*/
+Route::get('/auth/google/redirect', [GoogleController::class, 'redirectToGoogle'])->name('google.redirect');
+Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('google.callback');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -127,11 +136,14 @@ Route::middleware(['auth'])->prefix('cliente')->name('clientes.')->group(functio
     Route::get('/autocompletar', [BusquedaController::class, 'autocompletar'])->name('autocompletar');
 
     // Notificaciones
-    Route::prefix('notifications')->name('notifications.')->group(function () {
-        Route::get('/', [NotificacionesController::class, 'userIndex'])->name('index');
-        Route::get('/unread', [NotificacionesController::class, 'getUnreadNotifications'])->name('getUnread');
-        Route::get('/{id}', [NotificacionesController::class, 'userShow'])->name('show');
-    });
+    Route::get('/notificaciones', [NotificacionesController::class, 'indexCliente'])
+        ->name('notifications.index');
+
+    Route::get('/notificaciones/{id}', [NotificacionesController::class, 'showCliente'])
+        ->name('notifications.show');
+
+    Route::get('/notificaciones/unread', [NotificacionesController::class, 'getUnreadNotifications'])
+        ->name('notifications.getUnread');
 
     // Productos
     Route::get('/productos', [ClienteProductoController::class, 'index'])->name('productos.index');
@@ -207,13 +219,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Notificaciones
     Route::prefix('notificaciones')->name('notificaciones.')->group(function () {
-        Route::get('/', [NotificacionesController::class, 'index'])->name('index');
-        Route::get('/crear', [NotificacionesController::class, 'create'])->name('create');
-        Route::post('/', [NotificacionesController::class, 'store'])->name('store');
-        Route::get('/{id}/editar', [NotificacionesController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [NotificacionesController::class, 'update'])->name('update');
-        Route::post('/marcar-leidas', [NotificacionesController::class, 'marcarLeidas'])->name('marcarLeidas');
-        Route::delete('/{id}', [NotificacionesController::class, 'destroy'])->name('destroy');
+        Route::get('/', [App\Http\Controllers\NotificacionesController::class, 'indexAdmin'])->name('index');
+        Route::get('/crear', [App\Http\Controllers\NotificacionesController::class, 'createAdmin'])->name('create');
+        Route::post('/', [App\Http\Controllers\NotificacionesController::class, 'storeAdmin'])->name('store');
+        Route::get('/{id}/editar', [App\Http\Controllers\NotificacionesController::class, 'editAdmin'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\NotificacionesController::class, 'updateAdmin'])->name('update');
+        Route::post('/marcar-leidas', [App\Http\Controllers\NotificacionesController::class, 'marcarLeidas'])->name('marcarLeidas');
+        Route::delete('/{id}', [App\Http\Controllers\NotificacionesController::class, 'destroyAdmin'])->name('destroy');
     });
 
     // Usuarios

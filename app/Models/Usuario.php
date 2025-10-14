@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+// use Illuminate\Notifications\Notifiable; // <-- ELIMINA O COMENTA ESTA LÍNEA
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Usuario extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    // use HasFactory, Notifiable; // <-- CAMBIA ESTA LÍNEA
+    use HasFactory; // <-- POR ESTA
 
     protected $table = 'usuarios';
     protected $primaryKey = 'id';
@@ -25,6 +26,7 @@ class Usuario extends Authenticatable
         'idRolUsu',
         'nivRol', // Añadido para permitir asignación masiva
         'estadoUsu',
+        'google_id', // Permitir la asignación masiva para el ID de Google
     ];
 
     protected $hidden = [
@@ -37,10 +39,12 @@ class Usuario extends Authenticatable
         'passUsu' => 'hashed', // Laravel 12 usa 'password' como campo por defecto, pero aquí es 'passUsu'
     ];
 
+    /* ESTA FUNCIÓN ES LA CAUSA DEL PROBLEMA Y SERÁ ELIMINADA
     public function getAuthIdentifierName()
     {
         return 'emaUsu';
     }
+    */
 
     public function getAuthPassword()
     {

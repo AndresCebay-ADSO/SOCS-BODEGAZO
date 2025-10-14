@@ -87,11 +87,13 @@ class CarritoController extends Controller
         }
 
         Session::put('carrito', $carrito);
+        session()->save();
 
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Producto agregado al carrito correctamente.'
+                'message' => 'Producto agregado al carrito correctamente.',
+                'cantidad' => array_sum($carrito)
             ]);
         }
         return back()->with('success', 'Producto agregado al carrito correctamente.');
@@ -257,4 +259,4 @@ class CarritoController extends Controller
         $carrito = Session::get('carrito', []);
         return response()->json(['cantidad' => array_sum($carrito)]);
     }
-} 
+}

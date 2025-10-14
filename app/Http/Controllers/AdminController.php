@@ -17,28 +17,55 @@ class AdminController extends Controller
 {
     public function index()
     {
-        $salesData = Pedido::selectRaw('DATE(created_at) as date, COUNT(*) as count')
-            ->where('created_at', '>=', now()->subDays(7)->startOfDay())
+        // Datos para el gráfico de ventas (últimos 7 días)
+        $salesDataWeekly = Pedido::selectRaw('DATE(fecPed) as date, COUNT(*) as count')
+            ->where('fecPed', '>=', now()->subDays(7)->startOfDay())
             ->groupBy('date')
             ->orderBy('date')
             ->get()
             ->map(function ($item) {
                 return [
-                    'date' => Carbon::parse($item->date)->format('d M'),
+                    'date' => Carbon::parse($item->date)->format('Y-m-d'),
                     'count' => $item->count
                 ];
-        });
+            });
+
+        // --- NUEVO: Datos para el gráfico de ventas (últimos 30 días) ---
+        $salesDataMonthly = Pedido::selectRaw('DATE(fecPed) as date, COUNT(*) as count')
+            ->where('fecPed', '>=', now()->subDays(30)->startOfDay())
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'date' => Carbon::parse($item->date)->format('Y-m-d'),
+                    'count' => $item->count
+                ];
+            });
+
+        // Obtenemos los datos para el gráfico de estado de inventario
+        $stockStatusData = [
+            'in_stock' => Producto::where('canPro', '>', 10)->count(),
+            'low_stock' => Producto::whereBetween('canPro', [1, 10])->count(),
+            'out_of_stock' => Producto::where('canPro', '=', 0)->count(),
+        ];
 
         // Estadísticas principales
         $stats = [
             'total_productos' => Producto::count(),
-            'productos_bajo_stock' => Producto::where('canPro', '<', 10)->count(),
+            'productos_bajo_stock' => $stockStatusData['low_stock'],
             'pedidos_pendientes' => Pedido::where('estPed', 'pendiente')->count(),
             'notificaciones_sin_leer' => Notificacion::where('estNot', 'Activo')->count(),
             'inventario_total' => Inventario::sum('canInv'),
         ];
 
-        return view('admin.dashboard', compact('salesData', 'stats'));
+        // Consulta para obtener los últimos 5 pedidos
+        $pedidosRecientes = Pedido::with('usuario')
+            ->orderBy('fecPed', 'desc')
+            ->take(5)
+            ->get();
+
+        return view('admin.dashboard', compact('salesDataWeekly', 'salesDataMonthly', 'stats', 'stockStatusData', 'pedidosRecientes'));
     }
 
     /**
